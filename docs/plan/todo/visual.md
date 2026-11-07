@@ -53,3 +53,15 @@ Skills: `ui-taste`, `motion-doctrine`, `web-design-guidelines` (criterios aplica
 - [x] Render-blocking: `build.inlineStylesheets: 'always'` en `astro.config.mjs` (cambio mínimo fuera de alcance, pedido por el encargo): el CSS (~12 KB) va en línea, sin petición bloqueante. Sin JS nuevo.
 - Verificado: axe wcag2a/aa/21aa/22aa 0 violaciones, sin scroll horizontal, lint/format/check/test/e2e(35)/links en verde.
 - Pendiente fuera de alcance: el dato `status: 'active'` aparece en inglés en el detalle (datos de `proyectos`/`contenido`). No se ejecutó Lighthouse (sin Chrome de Playwright).
+
+### Hallazgos del comprobador — ronda de pulido (2026-11-07)
+Commit 658fba4 + cambios sin commitear, build local (`astro preview`), Edge. Evidencia en `tests/artifacts/local/`: `ronda2-check.txt` (72 combinaciones, `run-check.mjs`), `ronda2-salida.txt`/`ronda2b-salida.txt` (`run-ronda2.mjs`, `run-ronda2b.mjs`), `lhci-salida.txt`, `lhci-numeros.txt`, capturas `estres-*`, `foco-*`, `hover-*`.
+- CUMPLE: 6 rutas x 375/768/1440 x claro/oscuro x con/sin reduced-motion: sin scroll horizontal, CLS 0 (ninguna combinación supera 0.001), axe wcag2a/aa/21aa/22aa 0 violaciones, imágenes y fuentes cargadas, 1 h1 por ruta (corrige el hallazgo anterior de h1 y de CLS en /proyectos).
+- CUMPLE: Lighthouse (`npx lhci autorun` con Edge, 3 URLs): perf 100, a11y 100, SEO 100, best-practices 96; LCP 0.8 s, CLS 0, TBT <=70 ms. Aserciones >=0.95 en verde.
+- CUMPLE: foco en la fila-enlace (WCAG 2.4.7/2.4.11): cabecera `static`, nada fixed/sticky cubre el foco; anillo 2px visible y dentro del viewport en todas las rutas (captura `foco-fila-proyectos-375-light.png`). Salvedad menor: en 1440x700 el último foco (enlace GitHub del pie en `/`) queda a 0.28 px del borde inferior, el anillo se recorta unos px (`foco-ultimo-home-1440.png`); no lo oculta.
+- CUMPLE: objetivos (WCAG 2.5.8) todos >=24 px en 6 rutas x 3 anchos.
+- CUMPLE: contraste en hover de fila (fondo `--surface`): claro acento 5.50, muted 6.30; oscuro acento 6.93, muted 6.71 (>=4.5).
+- CUMPLE: con datos realistas (nombre de 100 caracteres, etiqueta de 30) no hay scroll horizontal a 375 en /proyectos.
+- NO CUMPLE (menor): con cadenas sin espacios extremas (nombre/URL ~190 caracteres, etiquetas de 100) hay desbordamiento a 375: /proyectos scrollWidth 838 (título, resumen, `ul.project-card__stack`, `dl.project-card__meta`), y en el detalle `/proyectos/lockin` +229 px con URL larga en `dd`/`p`. Falta `overflow-wrap: anywhere` (o `min-width:0` en los hijos de la rejilla). WCAG 1.4.10 Reflow. Riesgo real bajo (nombres de repo <=100), pero el detalle con URLs es plausible.
+- NO CUMPLE (menor): consola con 404 de `/favicon.ico` (no hay `<link rel=icon>` ni archivo en `public/`). Era el 404 intermitente de la ronda anterior (solo la primera carga de Edge lo pide). Resta puntos a best-practices (96). Falta icono (pendiente del responsable de SEO/visual).
+- Pendiente del usuario / no comprobable: lector de pantalla real; `web-design-guidelines` sin fetch externo.

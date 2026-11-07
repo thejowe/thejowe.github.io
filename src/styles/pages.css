@@ -241,3 +241,13 @@ main > h1,
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* Reflow (WCAG 1.4.10): cadenas largas sin espacios (URLs, nombres de repo) no desbordan */
+.project-card__title,
+.project-card__summary,
+.project-card__stack,
+.project-card__meta,
+.project-detail dd,
+.project-detail p {
+  overflow-wrap: anywhere;
+}
