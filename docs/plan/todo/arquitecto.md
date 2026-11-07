@@ -20,7 +20,7 @@
 
 ## Cierre
 - [x] [Claude] `npm run build` verde y `npm run check` sin errores
-- [ ] [Claude] `codex review` del diff antes de commitear en `main` (pendiente: la lanza la sesión orquestadora; sin commit hecho)
+- [x] `codex review` del diff antes de commitear en `main` — 0 hallazgos (solo lectura, 2026-11-07) (pendiente: la lanza la sesión orquestadora; sin commit hecho)
 
 ## Contrato congelado (2026-11-07)
 
