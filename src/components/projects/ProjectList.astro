@@ -19,14 +19,12 @@ const statsOf = (p: Project) => {
 };
 ---
 
-{
-  projects.length > 0 && (
-    <ul class="project-list" aria-label={label}>
-      {projects.map((p) => (
-        <li>
-          <ProjectCard project={p} stats={statsOf(p)} headingLevel={headingLevel} />
-        </li>
-      ))}
-    </ul>
-  )
-}
+{projects.length > 0 && (
+  <ul class="project-list" aria-label={label}>
+    {projects.map((p) => (
+      <li>
+        <ProjectCard project={p} stats={statsOf(p)} headingLevel={headingLevel} />
+      </li>
+    ))}
+  </ul>
+)}

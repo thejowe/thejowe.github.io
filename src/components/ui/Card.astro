@@ -6,7 +6,9 @@ interface Props {
 const { as: Tag = 'div' } = Astro.props;
 ---
 
-<Tag class="card"><slot /></Tag>
+<Tag class="card">
+  <slot />
+</Tag>
 
 <style>
   .card {

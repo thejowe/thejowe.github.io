@@ -14,7 +14,9 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const href = project.featured ? `${base}/proyectos/${project.slug}/` : project.repo;
 const pushed = stats?.pushedAt
-  ? new Intl.DateTimeFormat('es', { year: 'numeric', month: 'long' }).format(new Date(stats.pushedAt))
+  ? new Intl.DateTimeFormat('es', { year: 'numeric', month: 'long' }).format(
+      new Date(stats.pushedAt),
+    )
   : null;
 ---
 
@@ -24,22 +26,30 @@ const pushed = stats?.pushedAt
   </Heading>
   <p class="project-card__summary">{project.summary}</p>
   <ul class="project-card__stack" aria-label="Tecnologías">
-    {project.stack.map((tech) => <li>{tech}</li>)}
+    {project.stack.map((tech) => (
+      <li>{tech}</li>
+    ))}
   </ul>
   <dl class="project-card__meta">
-    <div><dt>Año</dt><dd>{project.year}</dd></div>
-    {
-      stats && (
-        <>
-          <div><dt>Estrellas</dt><dd>{stats.stars}</dd></div>
-          {pushed && (
-            <div>
-              <dt>Última actividad</dt>
-              <dd><time datetime={stats.pushedAt ?? undefined}>{pushed}</time></dd>
-            </div>
-          )}
-        </>
-      )
-    }
+    <div>
+      <dt>Año</dt>
+      <dd>{project.year}</dd>
+    </div>
+    {stats && (
+      <>
+        <div>
+          <dt>Estrellas</dt>
+          <dd>{stats.stars}</dd>
+        </div>
+        {pushed && (
+          <div>
+            <dt>Última actividad</dt>
+            <dd>
+              <time datetime={stats.pushedAt ?? undefined}>{pushed}</time>
+            </dd>
+          </div>
+        )}
+      </>
+    )}
   </dl>
 </article>

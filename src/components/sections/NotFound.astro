@@ -4,10 +4,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <section class="nf" aria-labelledby="nf-title">
-  <p class="code" aria-hidden="true">404</p>
+  <p class="code" aria-hidden="true">
+    404
+  </p>
   <h1 id="nf-title">Esta página no existe</h1>
   <p>La dirección está mal escrita o la página cambió de sitio.</p>
-  <p class="actions"><Button href={`${base}/`}>Volver al inicio</Button></p>
+  <p class="actions">
+    <Button href={`${base}/`}>Volver al inicio</Button>
+  </p>
 </section>
 
 <style>

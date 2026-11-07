@@ -6,4 +6,6 @@ interface Props {
 const { href, current = false } = Astro.props;
 ---
 
-<a class="nav-link" href={href} aria-current={current ? 'page' : undefined}><slot /></a>
+<a class="nav-link" href={href} aria-current={current ? 'page' : undefined}>
+  <slot />
+</a>

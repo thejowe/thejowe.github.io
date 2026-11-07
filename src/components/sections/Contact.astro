@@ -12,22 +12,18 @@ const { heading = 'Contacto' } = Astro.props;
   <h1 id="contact-title">{heading}</h1>
   <slot />
   <ul class="channels">
-    {
-      site.email && (
-        <li>
-          <Button href={`mailto:${site.email}`}>{site.email}</Button>
-        </li>
-      )
-    }
-    {
-      site.social.map((s) => (
-        <li>
-          <Button href={s.url} variant="ghost" external>
-            {s.label}
-          </Button>
-        </li>
-      ))
-    }
+    {site.email && (
+      <li>
+        <Button href={`mailto:${site.email}`}>{site.email}</Button>
+      </li>
+    )}
+    {site.social.map((s) => (
+      <li>
+        <Button href={s.url} variant="ghost" external>
+          {s.label}
+        </Button>
+      </li>
+    ))}
   </ul>
 </section>
 

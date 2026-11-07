@@ -9,9 +9,7 @@ const hasContent = Astro.slots.has('default');
 
 <section class="about" aria-labelledby="about-title">
   <h1 id="about-title">{heading}</h1>
-  <div class="prose">
-    {hasContent ? <slot /> : <p class="empty">Texto pendiente.</p>}
-  </div>
+  <div class="prose">{hasContent ? <slot /> : <p class="empty">Texto pendiente.</p>}</div>
 </section>
 
 <style>

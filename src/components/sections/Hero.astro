@@ -7,13 +7,23 @@ const github = site.social.find((s) => s.label === 'GitHub');
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <p class="eyebrow rise" style="--i: 0">@{site.githubUser}</p>
+  <p class="eyebrow rise" style="--i: 0">
+    @{site.githubUser}
+  </p>
   <!-- Sin animación en el h1: es el candidato a LCP -->
   <h1 id="hero-title">{site.name ?? site.title}</h1>
-  {site.tagline && <p class="tagline rise" style="--i: 1">{site.tagline}</p>}
+  {site.tagline && (
+    <p class="tagline rise" style="--i: 1">
+      {site.tagline}
+    </p>
+  )}
   <p class="actions rise" style="--i: 2">
     <Button href={`${base}/#proyectos`}>Ver proyectos</Button>
-    {github && <Button href={github.url} variant="ghost" external>GitHub</Button>}
+    {github && (
+      <Button href={github.url} variant="ghost" external>
+        GitHub
+      </Button>
+    )}
   </p>
 </section>
 

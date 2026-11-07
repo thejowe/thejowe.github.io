@@ -10,7 +10,7 @@ const { href, variant = 'primary', external = false } = Astro.props;
 <a
   class:list={['btn', `btn--${variant}`]}
   href={href}
-  {...external ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
 >
   <slot />
 </a>

@@ -12,36 +12,36 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <section class="section" id="proyectos" aria-labelledby="proyectos-title">
   <h2 id="proyectos-title">{heading}</h2>
-  {
-    projects.length === 0 ? (
-      <p class="empty">Aún no hay proyectos destacados.</p>
-    ) : (
-      <ol class="list">
-        {projects.map((p, i) => (
-          <li class="row">
-            <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <div class="body">
-              <h3>
-                <a href={`${base}/proyectos/${p.slug}`}>{p.title}</a>
-              </h3>
-              <p>{p.summary}</p>
-              <ul class="stack" aria-label="Tecnologías">
-                {p.stack.map((s) => (
-                  <li>
-                    <Tag>{s}</Tag>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <p class="meta">
-              <span>{p.year}</span>
-              <span>{p.role}</span>
-            </p>
-          </li>
-        ))}
-      </ol>
-    )
-  }
+  {projects.length === 0 ? (
+    <p class="empty">Aún no hay proyectos destacados.</p>
+  ) : (
+    <ol class="list">
+      {projects.map((p, i) => (
+        <li class="row">
+          <span class="num" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <div class="body">
+            <h3>
+              <a href={`${base}/proyectos/${p.slug}`}>{p.title}</a>
+            </h3>
+            <p>{p.summary}</p>
+            <ul class="stack" aria-label="Tecnologías">
+              {p.stack.map((s) => (
+                <li>
+                  <Tag>{s}</Tag>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p class="meta">
+            <span>{p.year}</span>
+            <span>{p.role}</span>
+          </p>
+        </li>
+      ))}
+    </ol>
+  )}
 </section>
 
 <style>

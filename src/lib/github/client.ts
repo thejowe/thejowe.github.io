@@ -55,7 +55,8 @@ function isRepoStats(r: unknown): r is RepoStats {
     typeof x.archived === 'boolean' &&
     typeof x.fork === 'boolean' &&
     typeof x.isPublic === 'boolean' &&
-    (x.pushedAt === null || (typeof x.pushedAt === 'string' && !Number.isNaN(Date.parse(x.pushedAt))))
+    (x.pushedAt === null ||
+      (typeof x.pushedAt === 'string' && !Number.isNaN(Date.parse(x.pushedAt))))
   );
 }
 
