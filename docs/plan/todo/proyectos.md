@@ -21,7 +21,8 @@
 - [ ] [Claude] `codex review` del diff antes de commitear
 
 ## Hallazgos del comprobador
-_(vacío)_
+2026-11-07, build local, commit 87db2ee + cambios. axe 0 violaciones en `/proyectos` y `/proyectos/lockin` (375/768/1440, claro/oscuro).
+- CLS 0.047 en `/proyectos` a 768 px (0.026 a 1440): se desplazan `.project-card__meta` y `.project-card__stack` hacia los 270 ms. Bajo 0.1, pero el objetivo es 0. Ver `tests/artifacts/local/extra-salida.txt`.
 
 ## Revisión Codex (2026-11-07)
 - [x] Caché: validación por repo en `readCache` (descarta entradas inválidas como `repos: [null]`). Corregido por la sesión orquestadora.

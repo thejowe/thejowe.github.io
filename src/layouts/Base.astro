@@ -41,6 +41,7 @@ const isCurrent = (path: string) =>
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="color-scheme" content="light dark" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="preload" href="/fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin />
     <slot name="head" />
   </head>
   <body>
