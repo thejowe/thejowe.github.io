@@ -12,7 +12,7 @@ import type { Project } from '../types/project';
 export const projects: Project[] = [
   {
     slug: 'lockin',
-    title: 'LockIn',
+    title: 'Cofounder',
     summary:
       'App móvil con Expo y React Native, backend en Supabase (migraciones, funciones y tests de esquema), interfaz en español, inglés y catalán, y suscripciones con RevenueCat.',
     role: 'Desarrollo completo',
