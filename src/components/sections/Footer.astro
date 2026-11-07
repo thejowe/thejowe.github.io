@@ -1,0 +1,16 @@
+---
+import { site } from '../../config/site';
+---
+
+<footer>
+  <p>&copy; {new Date().getFullYear()} {site.name ?? site.title}</p>
+  <ul aria-label="Enlaces">
+    {
+      site.social.map((link) => (
+        <li>
+          <a href={link.url} rel="me noopener">{link.label}</a>
+        </li>
+      ))
+    }
+  </ul>
+</footer>

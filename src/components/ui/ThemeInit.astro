@@ -1,0 +1,13 @@
+---
+/**
+ * Va en <head> de Base.astro, ANTES de cualquier CSS/bloque de render.
+ * Aplica el tema guardado antes del primer pintado (sin flash). Sin dependencias.
+ */
+---
+
+<script is:inline>
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  } catch (e) {}
+</script>

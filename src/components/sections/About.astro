@@ -1,0 +1,30 @@
+---
+/** Contenedor de «Sobre mí». El texto lo aporta `contenido` por el slot. */
+interface Props {
+  heading?: string;
+}
+const { heading = 'Sobre mí' } = Astro.props;
+const hasContent = Astro.slots.has('default');
+---
+
+<section class="about" aria-labelledby="about-title">
+  <h2 id="about-title">{heading}</h2>
+  <div class="prose">
+    {hasContent ? <slot /> : <p class="empty">Texto pendiente.</p>}
+  </div>
+</section>
+
+<style>
+  .prose {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+  .prose :global(p) {
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+  .empty {
+    color: var(--muted);
+  }
+</style>

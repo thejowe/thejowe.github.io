@@ -1,0 +1,123 @@
+---
+import type { Project } from '../../types/project';
+import Tag from '../ui/Tag.astro';
+
+interface Props {
+  projects: Project[];
+  heading?: string;
+}
+const { projects, heading = 'Proyectos destacados' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<section class="section" id="proyectos" aria-labelledby="proyectos-title">
+  <h2 id="proyectos-title">{heading}</h2>
+  {
+    projects.length === 0 ? (
+      <p class="empty">Aún no hay proyectos destacados.</p>
+    ) : (
+      <ol class="list">
+        {projects.map((p, i) => (
+          <li class="row">
+            <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <div class="body">
+              <h3>
+                <a href={`${base}/proyectos/${p.slug}`}>{p.title}</a>
+              </h3>
+              <p>{p.summary}</p>
+              <ul class="stack" aria-label="Tecnologías">
+                {p.stack.map((s) => (
+                  <li>
+                    <Tag>{s}</Tag>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p class="meta">
+              <span>{p.year}</span>
+              <span>{p.role}</span>
+            </p>
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</section>
+
+<style>
+  .list {
+    border-top: 1px solid var(--line);
+  }
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .num,
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+  .num {
+    padding-top: 0.5em;
+  }
+  .body {
+    display: grid;
+    gap: var(--space-3);
+  }
+  h3 a {
+    text-decoration: none;
+  }
+  /* El enlace cubre toda la fila: objetivo grande, sin depender de hover */
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  h3 a:hover,
+  .row:hover h3 a {
+    color: var(--accent);
+  }
+  .body > p {
+    color: var(--muted);
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .meta {
+    grid-column: 2;
+    display: flex;
+    gap: var(--space-4);
+    max-width: none;
+  }
+  .empty {
+    color: var(--muted);
+  }
+  @media (min-width: 48rem) {
+    .row {
+      grid-template-columns: 3rem 1fr 12rem;
+      align-items: start;
+    }
+    .meta {
+      grid-column: 3;
+      flex-direction: column;
+      gap: var(--space-1);
+      text-align: right;
+    }
+    .row h3 {
+      transition: color var(--dur-base) var(--ease-out);
+    }
+  }
+  /* Sin transform en el h3: crearía un contenedor para el ::after absoluto y recortaría el área clicable */
+  @media (min-width: 48rem) {
+    .row:hover h3 {
+      color: var(--accent);
+    }
+  }
+</style>

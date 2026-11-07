@@ -1,0 +1,44 @@
+---
+import { site } from '../../config/site';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  heading?: string;
+}
+const { heading = 'Contacto' } = Astro.props;
+---
+
+<section class="contact" aria-labelledby="contact-title">
+  <h2 id="contact-title">{heading}</h2>
+  <slot />
+  <ul class="channels">
+    {
+      site.email && (
+        <li>
+          <Button href={`mailto:${site.email}`}>{site.email}</Button>
+        </li>
+      )
+    }
+    {
+      site.social.map((s) => (
+        <li>
+          <Button href={s.url} variant="ghost" external>
+            {s.label}
+          </Button>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .channels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>
