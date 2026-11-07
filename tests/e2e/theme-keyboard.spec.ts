@@ -62,6 +62,9 @@ test.describe('tema', () => {
 });
 
 test.describe('teclado', () => {
+  // La intro (movimiento permitido) tiene su propio spec: aquí se prueba la home plana.
+  test.use({ reducedMotion: 'reduce' });
+
   test('el toggle se activa con Enter y Espacio', async ({ page }) => {
     await page.goto('/');
     await toggle(page).focus();
