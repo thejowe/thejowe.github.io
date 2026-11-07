@@ -1,0 +1,17 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+
+// Shell: el bloque `proyectos` sustituye esta lista por `src/data/projects.ts`
+// (solo los `featured`) y pasa el `Project` completo vía `props`.
+export const getStaticPaths = (() => {
+  return [] as { params: { slug: string } }[];
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+---
+
+<Base title={`Proyecto ${slug}`} description="Caso de estudio de un proyecto.">
+  <h1>{slug}</h1>
+  <p>Caso de estudio pendiente.</p>
+</Base>

@@ -1,0 +1,74 @@
+---
+import { site } from '../config/site';
+
+interface Props {
+  /** Título de la página; se compone como «título · sitio». Omitir en portada. */
+  title?: string;
+  description?: string;
+  /** Excluye la página de los buscadores. */
+  noindex?: boolean;
+}
+
+const { title, description = site.description, noindex = false } = Astro.props;
+const fullTitle = title ? `${title} · ${site.title}` : site.title;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const nav = [
+  { href: `${base}/`, path: '/', label: 'Inicio' },
+  { href: `${base}/sobre-mi`, path: '/sobre-mi', label: 'Sobre mí' },
+  { href: `${base}/contacto`, path: '/contacto', label: 'Contacto' },
+];
+const isCurrent = (path: string) =>
+  path === '/' ? current === '/' : current === path || current.startsWith(`${path}/`);
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="color-scheme" content="light dark" />
+    <meta name="generator" content={Astro.generator} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <header>
+      <a href={`${base}/`} class="site-name">{site.name ?? site.title}</a>
+      <nav aria-label="Principal">
+        <ul>
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href} aria-current={isCurrent(item.path) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+    <footer>
+      <p>&copy; {new Date().getFullYear()} {site.name ?? site.title}</p>
+      <ul aria-label="Enlaces">
+        {
+          site.social.map((link) => (
+            <li>
+              <a href={link.url} rel="me noopener">{link.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </footer>
+  </body>
+</html>

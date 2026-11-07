@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../config/site';
+---
+
+<Base title="Contacto" description="Cómo contactar conmigo.">
+  <h1>Contacto</h1>
+  <p>Mientras se completa esta página, puedes encontrarme en GitHub.</p>
+  <ul>
+    {site.social.map((link) => <li><a href={link.url}>{link.label}</a></li>)}
+  </ul>
+</Base>
