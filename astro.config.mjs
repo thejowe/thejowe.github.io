@@ -8,5 +8,7 @@ export default defineConfig({
   base: '/',
   output: 'static',
   trailingSlash: 'ignore',
+  // CSS en línea: elimina la petición que bloquea el render (el CSS total pesa pocos KB)
+  build: { inlineStylesheets: 'always' },
   integrations: [sitemap()],
 });

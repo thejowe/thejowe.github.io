@@ -1,0 +1,243 @@
+/* Estilos de las páginas internas cuyo marcado vive en src/components/projects y src/pages
+   (listado de proyectos, detalle, otros repositorios). Mismo lenguaje que ProjectsFeatured:
+   filas editoriales separadas por filas finas, etiquetas mono, sin tarjetas idénticas. */
+
+/* Título de página interior: aire respecto al contenido */
+main > h1,
+.project-detail h1 {
+  font-size: var(--step-4);
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+  margin-bottom: var(--space-7);
+}
+
+/* Etiquetas mono compartidas */
+.project-card__meta dt,
+.project-detail__meta dt {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.project-card__stack,
+.project-detail section ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.project-card__stack li,
+.project-detail section li {
+  padding: 0.1rem var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  line-height: 1.5;
+  color: var(--muted);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Listado /proyectos */
+.project-list {
+  border-top: 1px solid var(--line);
+}
+.project-list > li {
+  border-bottom: 1px solid var(--line);
+}
+.project-card {
+  position: relative;
+  display: grid;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-6) 0;
+}
+.project-card > * {
+  min-width: 0;
+}
+.project-card__title {
+  font-size: var(--step-2);
+}
+.project-card__title a {
+  text-decoration: none;
+}
+/* El enlace cubre toda la tarjeta: objetivo grande */
+.project-card__title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+.project-card:hover .project-card__title a {
+  color: var(--accent);
+}
+.project-card__summary {
+  color: var(--muted);
+}
+.project-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  margin: 0;
+}
+.project-card__meta dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+}
+@media (min-width: 48rem) {
+  .project-card {
+    grid-template-columns: minmax(0, 1fr) 13rem;
+    grid-template-areas:
+      'title meta'
+      'summary meta'
+      'stack meta';
+    align-items: start;
+  }
+  .project-card__title {
+    grid-area: title;
+  }
+  .project-card__summary {
+    grid-area: summary;
+  }
+  .project-card__stack {
+    grid-area: stack;
+  }
+  .project-card__meta {
+    grid-area: meta;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: 0.5rem;
+  }
+}
+
+/* Otros repositorios */
+.other-repos {
+  margin-top: var(--space-9);
+}
+.other-repos h2 {
+  margin-bottom: var(--space-5);
+}
+.other-repos ul {
+  border-top: 1px solid var(--line);
+}
+.other-repos li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.other-repos li a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  justify-self: start;
+  font-size: var(--step-1);
+  text-decoration-color: transparent;
+}
+.other-repos li a:hover {
+  text-decoration-color: currentColor;
+}
+.other-repos__lang {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+.other-repos__desc {
+  grid-column: 1 / -1;
+  padding-bottom: var(--space-3);
+  color: var(--muted);
+  max-width: var(--measure);
+}
+
+/* Detalle de proyecto */
+.project-detail > header {
+  margin-bottom: var(--space-7);
+}
+.project-detail > header > p:first-child {
+  margin-bottom: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+}
+.project-detail > header > p:first-child a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--muted);
+  text-decoration: none;
+}
+.project-detail > header > p:first-child a::before {
+  content: '\2190\00a0' / '';
+}
+.project-detail > header > p:first-child a:hover {
+  color: var(--accent);
+}
+.project-detail h1 {
+  margin-bottom: var(--space-5);
+  max-width: 14ch;
+}
+.project-detail > header > p:last-child {
+  font-size: var(--step-1);
+  line-height: 1.4;
+  color: var(--muted);
+  max-width: 44ch;
+}
+.project-detail__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: var(--space-5) var(--space-6);
+  margin: 0;
+  padding: var(--space-5) 0;
+  border-block: 1px solid var(--line);
+}
+.project-detail__meta dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--step-1);
+}
+.project-detail section {
+  margin-top: var(--space-7);
+}
+.project-detail section h2 {
+  margin-bottom: var(--space-4);
+  font-size: var(--step-1);
+}
+.project-detail section li {
+  padding: 0.2rem var(--space-3);
+}
+.project-detail > nav {
+  margin-top: var(--space-7);
+}
+.project-detail > nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.project-detail > nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-5);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.project-detail > nav li:first-child a {
+  background: var(--ink);
+  color: var(--bg);
+}
+.project-detail > nav li:first-child a:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.project-detail > nav li:not(:first-child) a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}

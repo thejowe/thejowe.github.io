@@ -16,6 +16,24 @@
   font-display: swap;
 }
 
+/* Fallbacks con métricas ajustadas: el swap de fuente no desplaza el layout (CLS) */
+@font-face {
+  font-family: 'Newsreader Fallback';
+  src: local('Georgia');
+  size-adjust: 96.6%;
+  ascent-override: 76.6%;
+  descent-override: 28%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Courier New');
+  size-adjust: 100%;
+  ascent-override: 102%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+}
+
 :root {
   color-scheme: light;
 
@@ -30,14 +48,17 @@
   --focus: #1a1814;
 
   /* Tipografía */
-  --font-serif: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --font-serif:
+    'Newsreader', 'Newsreader Fallback', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-mono:
+    'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, 'Cascadia Code', Consolas, monospace;
   --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
   --step-0: clamp(1.0625rem, 1.03rem + 0.17vw, 1.1875rem);
   --step-1: clamp(1.3rem, 1.2rem + 0.5vw, 1.6rem);
   --step-2: clamp(1.7rem, 1.45rem + 1.2vw, 2.4rem);
   --step-3: clamp(2.4rem, 1.7rem + 3.4vw, 4.5rem);
   --step-4: clamp(3rem, 1.8rem + 6vw, 7rem);
+  --step-5: clamp(3.75rem, 1.6rem + 10.5vw, 9.5rem);
   --leading-tight: 1.05;
   --leading-body: 1.6;
 

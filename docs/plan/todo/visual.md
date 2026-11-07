@@ -40,3 +40,16 @@ Comprobado 2026-11-07, commit 87db2ee + cambios sin commitear, build local (`ast
 - `Base.astro`: `import '../styles/global.css'`; `<ThemeInit />` primero en `<head>`; `<ThemeToggle />` en header; usar `<Footer />`.
 - Páginas: usar Hero, ProjectsFeatured, About, Contact, NotFound.
 - `web-design-guidelines`: no ejecutada (requiere fetch externo); revisar tras cablear.
+
+## Ronda de pulido (2026-11-07)
+Skills: `ui-taste`, `motion-doctrine`, `web-design-guidelines` (criterios aplicados leyendo la guía; sin fetch externo). Capturas antes/después en `tests/artifacts/local/ronda2/` (prefijos `a-` antes, `c-` después; script `tests/artifacts/local/shots.mjs`).
+- [x] Hallazgo principal: `/proyectos`, `/proyectos/<slug>` y «Otros repositorios» no tenían CSS (HTML en bruto). Nuevo `src/styles/pages.css` (importado desde `global.css`) con el mismo lenguaje editorial que la home: filas con líneas finas, meta en mono, etiquetas, enlace que cubre la tarjeta, detalle con rejilla de metadatos y botones. El detalle sin caso de estudio queda compuesto (migas, título grande, entradilla, metadatos, tecnologías, enlace).
+- [x] Hero con carácter: título hasta 9.5rem (`--step-5`), línea de acento antes de `@thejowe`, regla fina y pie en dos columnas (tagline izquierda, botones derecha). h1 sigue sin animar (LCP).
+- [x] Cabecera: en móvil marca + toggle en una fila y nav debajo (antes el toggle ocupaba una fila entera); en escritorio rejilla 1fr/auto/1fr con nav realmente centrada. Subrayado del enlace activo/hover como `::after` con `scaleX` pegado al texto (antes flotaba a 44px). `view-transition-name` en la cabecera: no se desvanece al navegar.
+- [x] Pie: la línea superior ya no desborda el contenido; alineación vertical centrada.
+- [x] Sobre mí / Contacto: dos columnas en >=64rem (título a la izquierda, sticky en Sobre mí), primer párrafo como entrada, espacio h1-contenido (antes 0).
+- [x] Lista destacada: títulos a `--step-2`, hover con fondo `--surface` (pseudo-elemento, sin mover layout) y número en acento; nada esencial depende de hover.
+- [x] CLS: fuentes fallback con métricas ajustadas (`size-adjust`/`ascent-override`, medidas en navegador) para Newsreader (sobre Georgia) y JetBrains Mono (sobre Courier New). CLS medido 0 en 6 rutas x 3 anchos x 2 temas.
+- [x] Render-blocking: `build.inlineStylesheets: 'always'` en `astro.config.mjs` (cambio mínimo fuera de alcance, pedido por el encargo): el CSS (~12 KB) va en línea, sin petición bloqueante. Sin JS nuevo.
+- Verificado: axe wcag2a/aa/21aa/22aa 0 violaciones, sin scroll horizontal, lint/format/check/test/e2e(35)/links en verde.
+- Pendiente fuera de alcance: el dato `status: 'active'` aparece en inglés en el detalle (datos de `proyectos`/`contenido`). No se ejecutó Lighthouse (sin Chrome de Playwright).

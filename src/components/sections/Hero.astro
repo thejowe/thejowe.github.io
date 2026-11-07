@@ -12,37 +12,58 @@ const github = site.social.find((s) => s.label === 'GitHub');
   </p>
   <!-- Sin animación en el h1: es el candidato a LCP -->
   <h1 id="hero-title">{site.name ?? site.title}</h1>
-  {site.tagline && (
-    <p class="tagline rise" style="--i: 1">
-      {site.tagline}
-    </p>
-  )}
-  <p class="actions rise" style="--i: 2">
-    <Button href={`${base}/#proyectos`}>Ver proyectos</Button>
-    {github && (
-      <Button href={github.url} variant="ghost" external>
-        GitHub
-      </Button>
+  <div class="foot">
+    {site.tagline && (
+      <p class="tagline rise" style="--i: 1">
+        {site.tagline}
+      </p>
     )}
-  </p>
+    <p class="actions rise" style="--i: 2">
+      <Button href={`${base}/#proyectos`}>Ver proyectos</Button>
+      {github && (
+        <Button href={github.url} variant="ghost" external>
+          GitHub
+        </Button>
+      )}
+    </p>
+  </div>
 </section>
 
 <style>
   .hero {
     display: grid;
     gap: var(--space-5);
-    padding-top: var(--space-7);
+    padding-top: var(--space-6);
+  }
+  /* Marca de acento antes del usuario: un único gesto de color en la cabecera */
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .eyebrow::before {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background: var(--accent);
   }
   h1 {
-    font-size: var(--step-4);
+    font-size: var(--step-5);
     font-weight: 400;
-    letter-spacing: -0.035em;
-    max-width: 14ch;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    margin-left: -0.04em;
+  }
+  .foot {
+    display: grid;
+    gap: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
   }
   .tagline {
     font-size: var(--step-1);
     color: var(--muted);
-    max-width: 36ch;
+    max-width: 34ch;
     line-height: 1.35;
   }
   .actions {
@@ -50,6 +71,16 @@ const github = site.social.find((s) => s.label === 'GitHub');
     flex-wrap: wrap;
     gap: var(--space-3);
     max-width: none;
-    margin-top: var(--space-3);
+  }
+  @media (min-width: 48rem) {
+    .hero {
+      padding-top: var(--space-8);
+      gap: var(--space-6);
+    }
+    .foot {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: var(--space-6);
+    }
   }
 </style>
