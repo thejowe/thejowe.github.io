@@ -7,13 +7,14 @@ import type { Project } from '../types/project';
  * simplemente un repo ausente de este array.
  *
  * Los `summary` son descriptivos y provisionales (solo hechos verificables del
- * repo); `contenido` los redacta definitivamente.
+ * repo), redactados por `contenido`.
  */
 export const projects: Project[] = [
   {
     slug: 'lockin',
     title: 'LockIn',
-    summary: 'Proyecto en TypeScript con actividad reciente. Resumen pendiente de redacción.',
+    summary:
+      'App móvil con Expo y React Native, backend en Supabase (migraciones, funciones y tests de esquema), interfaz en español, inglés y catalán, y suscripciones con RevenueCat.',
     role: 'Desarrollo completo',
     stack: ['TypeScript'],
     repo: 'https://github.com/thejowe/lockin',
@@ -26,7 +27,8 @@ export const projects: Project[] = [
   {
     slug: 'cofounder-web',
     title: 'Cofounder Web',
-    summary: 'Web pública de cofounder: privacidad, términos y soporte.',
+    summary:
+      'Web estática en HTML y CSS de la app cofounder: privacidad, términos, normas, seguridad infantil, soporte y eliminación de cuenta.',
     role: 'Desarrollo completo',
     stack: ['HTML'],
     repo: 'https://github.com/thejowe/cofounder-web',
@@ -39,7 +41,8 @@ export const projects: Project[] = [
   {
     slug: 'ninjex',
     title: 'Ninjex',
-    summary: 'Videojuego desarrollado en GDScript (Godot). Resumen pendiente de redacción.',
+    summary:
+      'Vertical slice de combate cooperativo ninja en Godot 4.7, con modo en red (NetworkManager) y todo el código en GDScript.',
     role: 'Desarrollo completo',
     stack: ['GDScript', 'Godot'],
     repo: 'https://github.com/thejowe/ninjex',
@@ -52,7 +55,8 @@ export const projects: Project[] = [
   {
     slug: 'gamblex',
     title: 'Gamblex',
-    summary: 'Proyecto en GDScript (Godot). Resumen pendiente de redacción.',
+    summary:
+      'Casino multijugador en pixel art hecho con Godot 4.7: red, integración con Steam, audio y tests.',
     role: 'Desarrollo completo',
     stack: ['GDScript', 'Godot'],
     repo: 'https://github.com/thejowe/gamblex',
@@ -65,7 +69,8 @@ export const projects: Project[] = [
   {
     slug: 'circuit',
     title: 'Circuit',
-    summary: 'Proyecto web en HTML. Resumen pendiente de redacción.',
+    summary:
+      'Circuito de supercross en 3D que se ejecuta en el navegador, en un único archivo HTML con controles en pantalla.',
     role: 'Desarrollo completo',
     stack: ['HTML'],
     repo: 'https://github.com/thejowe/circuit',

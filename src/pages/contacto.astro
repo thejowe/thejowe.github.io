@@ -1,10 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import Contact from '../components/sections/Contact.astro';
+import { site } from '../config/site';
 ---
 
 <Base title="Contacto" description="Cómo contactar conmigo.">
   <Contact>
-    <p>Por ahora, el mejor canal es GitHub.</p>
+    <p>
+      {site.email ? 'Escríbeme por email o mira el código en GitHub.' : 'Mira el código en GitHub.'}{' '}
+      Respondo en español.
+    </p>
   </Contact>
 </Base>
