@@ -1,0 +1,9 @@
+dist
+.astro
+.cache
+node_modules
+tests/artifacts
+package-lock.json
+docs
+.agents
+.claude
