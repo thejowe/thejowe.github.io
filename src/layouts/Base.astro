@@ -1,5 +1,9 @@
 ---
+import '../styles/global.css';
 import { site } from '../config/site';
+import ThemeInit from '../components/ui/ThemeInit.astro';
+import ThemeToggle from '../components/ui/ThemeToggle.astro';
+import Footer from '../components/sections/Footer.astro';
 
 interface Props {
   /** Título de la página; se compone como «título · sitio». Omitir en portada. */
@@ -17,6 +21,7 @@ const current = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const nav = [
   { href: `${base}/`, path: '/', label: 'Inicio' },
+  { href: `${base}/proyectos`, path: '/proyectos', label: 'Proyectos' },
   { href: `${base}/sobre-mi`, path: '/sobre-mi', label: 'Sobre mí' },
   { href: `${base}/contacto`, path: '/contacto', label: 'Contacto' },
 ];
@@ -27,6 +32,7 @@ const isCurrent = (path: string) =>
 <!doctype html>
 <html lang={site.lang}>
   <head>
+    <ThemeInit />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
@@ -54,21 +60,11 @@ const isCurrent = (path: string) =>
           }
         </ul>
       </nav>
+      <ThemeToggle />
     </header>
     <main id="contenido" tabindex="-1">
       <slot />
     </main>
-    <footer>
-      <p>&copy; {new Date().getFullYear()} {site.name ?? site.title}</p>
-      <ul aria-label="Enlaces">
-        {
-          site.social.map((link) => (
-            <li>
-              <a href={link.url} rel="me noopener">{link.label}</a>
-            </li>
-          ))
-        }
-      </ul>
-    </footer>
+    <Footer />
   </body>
 </html>

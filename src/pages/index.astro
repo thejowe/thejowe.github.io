@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import { site } from '../config/site';
+import Hero from '../components/sections/Hero.astro';
+import ProjectsFeatured from '../components/sections/ProjectsFeatured.astro';
+import { getFeatured } from '../data/projects';
 ---
 
 <Base>
-  <h1>{site.name ?? site.title}</h1>
-  <p>Portada en construcción. Aquí irán el posicionamiento y los proyectos destacados.</p>
+  <Hero />
+  <ProjectsFeatured projects={getFeatured()} />
 </Base>
