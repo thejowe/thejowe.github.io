@@ -1,0 +1,32 @@
+---
+import type { Project } from '../../types/project';
+import type { RepoStats } from '../../lib/github';
+import { repoName } from '../../data/projects';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  projects: Project[];
+  repos?: readonly RepoStats[];
+  headingLevel?: 2 | 3 | 4;
+  /** Nombre accesible de la lista. */
+  label?: string;
+}
+
+const { projects, repos = [], headingLevel = 3, label = 'Proyectos' } = Astro.props;
+const statsOf = (p: Project) => {
+  const name = repoName(p);
+  return name ? repos.find((r) => r.name.toLowerCase() === name) : undefined;
+};
+---
+
+{
+  projects.length > 0 && (
+    <ul class="project-list" aria-label={label}>
+      {projects.map((p) => (
+        <li>
+          <ProjectCard project={p} stats={statsOf(p)} headingLevel={headingLevel} />
+        </li>
+      ))}
+    </ul>
+  )
+}

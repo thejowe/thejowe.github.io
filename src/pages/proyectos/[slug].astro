@@ -1,17 +1,62 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
+import { site } from '../../config/site';
+import { getFeatured, repoName } from '../../data/projects';
+import { getGithubSnapshot, statsFor } from '../../lib/github';
+import type { Project } from '../../types/project';
 
-// Shell: el bloque `proyectos` sustituye esta lista por `src/data/projects.ts`
-// (solo los `featured`) y pasa el `Project` completo vía `props`.
-export const getStaticPaths = (() => {
-  return [] as { params: { slug: string } }[];
+export const getStaticPaths = (async () => {
+  const snapshot = await getGithubSnapshot(site.githubUser);
+  return getFeatured().map((project) => ({
+    params: { slug: project.slug },
+    props: { project, stats: statsFor(snapshot.repos, repoName(project)) },
+  }));
 }) satisfies GetStaticPaths;
 
-const { slug } = Astro.params;
+interface Props {
+  project: Project;
+  stats?: ReturnType<typeof statsFor>;
+}
+
+const { project, stats } = Astro.props;
+const languages = stats?.languages.length ? stats.languages : project.stack;
+const pushed = stats?.pushedAt
+  ? new Intl.DateTimeFormat('es', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(stats.pushedAt))
+  : null;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Base title={`Proyecto ${slug}`} description="Caso de estudio de un proyecto.">
-  <h1>{slug}</h1>
-  <p>Caso de estudio pendiente.</p>
+<Base title={project.title} description={project.summary}>
+  <article class="project-detail">
+    <header>
+      <p><a href={`${base}/`}>Inicio</a></p>
+      <h1>{project.title}</h1>
+      <p>{project.summary}</p>
+    </header>
+
+    <dl class="project-detail__meta">
+      <div><dt>Rol</dt><dd>{project.role}</dd></div>
+      <div><dt>Año</dt><dd>{project.year}</dd></div>
+      <div><dt>Estado</dt><dd>{project.status}</dd></div>
+      {stats && <div><dt>Estrellas</dt><dd>{stats.stars}</dd></div>}
+      {pushed && <div><dt>Última actividad</dt><dd><time datetime={stats?.pushedAt ?? undefined}>{pushed}</time></dd></div>}
+    </dl>
+
+    <section aria-labelledby="stack-title">
+      <h2 id="stack-title">Tecnologías</h2>
+      <ul>{languages.map((l) => <li>{l}</li>)}</ul>
+    </section>
+
+    {
+      (project.repo || project.demo) && (
+        <nav aria-label="Enlaces del proyecto">
+          <ul>
+            {project.demo && <li><a href={project.demo} rel="noopener">Ver demo</a></li>}
+            {project.repo && <li><a href={project.repo} rel="noopener">Ver código en GitHub</a></li>}
+          </ul>
+        </nav>
+      )
+    }
+  </article>
 </Base>

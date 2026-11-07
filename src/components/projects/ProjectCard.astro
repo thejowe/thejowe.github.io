@@ -1,0 +1,45 @@
+---
+import type { Project } from '../../types/project';
+import type { RepoStats } from '../../lib/github';
+
+interface Props {
+  project: Project;
+  stats?: RepoStats;
+  /** Nivel de encabezado del título (por defecto h3). */
+  headingLevel?: 2 | 3 | 4;
+}
+
+const { project, stats, headingLevel = 3 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = project.featured ? `${base}/proyectos/${project.slug}/` : project.repo;
+const pushed = stats?.pushedAt
+  ? new Intl.DateTimeFormat('es', { year: 'numeric', month: 'long' }).format(new Date(stats.pushedAt))
+  : null;
+---
+
+<article class="project-card" data-slug={project.slug}>
+  <Heading class="project-card__title">
+    {href ? <a href={href}>{project.title}</a> : project.title}
+  </Heading>
+  <p class="project-card__summary">{project.summary}</p>
+  <ul class="project-card__stack" aria-label="Tecnologías">
+    {project.stack.map((tech) => <li>{tech}</li>)}
+  </ul>
+  <dl class="project-card__meta">
+    <div><dt>Año</dt><dd>{project.year}</dd></div>
+    {
+      stats && (
+        <>
+          <div><dt>Estrellas</dt><dd>{stats.stars}</dd></div>
+          {pushed && (
+            <div>
+              <dt>Última actividad</dt>
+              <dd><time datetime={stats.pushedAt ?? undefined}>{pushed}</time></dd>
+            </div>
+          )}
+        </>
+      )
+    }
+  </dl>
+</article>

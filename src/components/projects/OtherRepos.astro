@@ -1,0 +1,28 @@
+---
+import type { RepoStats } from '../../lib/github';
+
+interface Props {
+  repos: readonly RepoStats[];
+  headingLevel?: 2 | 3;
+}
+
+const { repos, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+{
+  repos.length > 0 && (
+    <section class="other-repos" aria-labelledby="other-repos-title">
+      <Heading id="other-repos-title">Otros repositorios</Heading>
+      <ul>
+        {repos.map((r) => (
+          <li>
+            <a href={r.url} rel="noopener">{r.name}</a>
+            {r.language && <span class="other-repos__lang">{r.language}</span>}
+            {r.description && <span class="other-repos__desc">{r.description}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
