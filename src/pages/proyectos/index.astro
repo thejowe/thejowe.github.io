@@ -1,18 +1,15 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProjectList from '../../components/projects/ProjectList.astro';
-import OtherRepos from '../../components/projects/OtherRepos.astro';
 import { site } from '../../config/site';
-import { projects, sortByYearDesc, repoName, excludedRepos } from '../../data/projects';
-import { getGithubSnapshot, otherRepos } from '../../lib/github';
+import { projects, sortByYearDesc } from '../../data/projects';
+import { getGithubSnapshot } from '../../lib/github';
 
 const snapshot = await getGithubSnapshot(site.githubUser);
 const list = sortByYearDesc(projects);
-const others = otherRepos(snapshot.repos, projects.map(repoName), excludedRepos);
 ---
 
-<Base title="Proyectos" description="Proyectos y repositorios públicos.">
+<Base title="Proyectos" description="Cofounder, la app en la que trabajo.">
   <h1>Proyectos</h1>
   <ProjectList projects={list} repos={snapshot.repos} headingLevel={2} />
-  <OtherRepos repos={others} headingLevel={2} />
 </Base>

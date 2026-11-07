@@ -24,62 +24,6 @@ export const projects: Project[] = [
     year: 2026,
     status: 'active',
   },
-  {
-    slug: 'cofounder-web',
-    title: 'Cofounder Web',
-    summary:
-      'Web estática en HTML y CSS de la app cofounder: privacidad, términos, normas, seguridad infantil, soporte y eliminación de cuenta.',
-    role: 'Desarrollo completo',
-    stack: ['HTML'],
-    repo: 'https://github.com/thejowe/cofounder-web',
-    visibility: 'public',
-    featured: true,
-    order: 2,
-    year: 2026,
-    status: 'maintained',
-  },
-  {
-    slug: 'ninjex',
-    title: 'Ninjex',
-    summary:
-      'Vertical slice de combate cooperativo ninja en Godot 4.7, con modo en red (NetworkManager) y todo el código en GDScript.',
-    role: 'Desarrollo completo',
-    stack: ['GDScript', 'Godot'],
-    repo: 'https://github.com/thejowe/ninjex',
-    visibility: 'public',
-    featured: true,
-    order: 3,
-    year: 2026,
-    status: 'prototype',
-  },
-  {
-    slug: 'gamblex',
-    title: 'Gamblex',
-    summary:
-      'Casino multijugador en pixel art hecho con Godot 4.7: red, integración con Steam, audio y tests.',
-    role: 'Desarrollo completo',
-    stack: ['GDScript', 'Godot'],
-    repo: 'https://github.com/thejowe/gamblex',
-    visibility: 'public',
-    featured: true,
-    order: 4,
-    year: 2026,
-    status: 'prototype',
-  },
-  {
-    slug: 'circuit',
-    title: 'Circuit',
-    summary:
-      'Circuito de supercross en 3D que se ejecuta en el navegador, en un único archivo HTML con controles en pantalla.',
-    role: 'Desarrollo completo',
-    stack: ['HTML'],
-    repo: 'https://github.com/thejowe/circuit',
-    visibility: 'public',
-    featured: true,
-    order: 5,
-    year: 2026,
-    status: 'prototype',
-  },
 ];
 
 /**
