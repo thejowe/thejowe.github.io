@@ -3,8 +3,13 @@ import type { IntroPath, PathPoint } from './types';
 
 const LENGTH = 40;
 const EYE = 1.65;
-/** Distancia de la parada a la luz; menos el empujón final de 0.35 m = 1.2 m (ver HANDS_TOUCH). */
-const STOP_TO_WISP = 1.55;
+/** Altura de la luz sobre los ojos: flota por encima de la cabeza y hay que alzar el brazo. */
+const WISP_RISE = 0.8;
+/** Alcance del brazo (ver HANDS_TOUCH) y empujón final de la cámara hacia la luz. */
+const REACH = 1.2;
+const LUNGE = 0.35;
+/** Distancia horizontal de la parada a la luz: tras el empujón, la luz queda a REACH en línea recta. */
+const STOP_TO_WISP = Math.sqrt(REACH * REACH - WISP_RISE * WISP_RISE) + LUNGE;
 
 /** Eje sinuoso del sendero. z negativo = hacia delante. */
 const centerX = (z: number) => 5 * Math.sin(-z * 0.05) + 2 * Math.sin(-z * 0.13 + 1);
@@ -20,6 +25,6 @@ export function createPath(): IntroPath {
   };
   const end = at(1);
   const wisp = end.pos.clone().addScaledVector(end.dir, STOP_TO_WISP);
-  wisp.y = EYE - 0.15;
+  wisp.y = EYE + WISP_RISE;
   return { length: LENGTH, at, centerX, wisp, eyeHeight: EYE };
 }

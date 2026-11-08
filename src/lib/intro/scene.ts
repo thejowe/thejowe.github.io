@@ -76,7 +76,7 @@ export async function createIntroScene(canvas: HTMLCanvasElement): Promise<Intro
     const look = pt.pos.clone().addScaledVector(pt.dir, 12);
     look.y -= 0.35;
     const toWisp = path.wisp.clone();
-    camera.lookAt(look.lerp(toWisp, smooth(0.5, 0.82, w)));
+    camera.lookAt(look.lerp(toWisp, smooth(0.3, 0.85, w)));
     camera.rotation.z += Math.sin(phase) * 0.006 * envelope;
   };
 
