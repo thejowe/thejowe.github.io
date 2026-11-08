@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { IntroPath, PathPoint } from './types';
 
-const LENGTH = 70;
+const LENGTH = 40;
 const EYE = 1.65;
 /** Distancia de la parada a la luz; menos el empujón final de 0.35 m = 1.2 m (ver HANDS_TOUCH). */
 const STOP_TO_WISP = 1.55;

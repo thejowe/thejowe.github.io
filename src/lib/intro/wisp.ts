@@ -4,7 +4,7 @@ import { T } from './types';
 import type { IntroModule, ModuleCtx } from './types';
 
 /**
- * La luz (wisp), sus motas, las luciérnagas del bosque y la explosión del contacto.
+ * La luz (wisp), sus motas y la explosión del contacto.
  * Todo es función pura del progreso `p` (reversible, sin acumular estado ni usar el reloj).
  * Draw calls: 3 sprites (halo grande, halo medio, núcleo) + 2 anillos + 3 Points = 8.
  */
@@ -159,35 +159,6 @@ export function createWisp(ctx: ModuleCtx): IntroModule {
   motes.renderOrder = 12;
   group.add(motes);
 
-  // ---- Luciérnagas ----
-  const FLIES = 110;
-  const rf = rng(31);
-  const zEnd = origin.z;
-  const flies = Array.from({ length: FLIES }, () => {
-    const z = -rf() * (-zEnd + 4) + 1;
-    return {
-      bx: ctx.path.centerX(z) + (rf() * 2 - 1) * 14,
-      by: 0.3 + rf() * 2.9,
-      bz: z,
-      ax: 0.5 + rf() * 1.5,
-      fx: 3 + rf() * 6,
-      fy: 2 + rf() * 5,
-      ph: rf() * 6.283,
-      blink: 8 + rf() * 16, // ciclos por recorrido: ≈1 Hz a ritmo normal
-      bph: rf(),
-    };
-  });
-  const flyPos = new Float32Array(FLIES * 3);
-  const flyCol = new Float32Array(FLIES * 3);
-  const flyGeo = new THREE.BufferGeometry();
-  flyGeo.setAttribute('position', new THREE.BufferAttribute(flyPos, 3));
-  flyGeo.setAttribute('color', new THREE.BufferAttribute(flyCol, 3));
-  const flyMat = additivePoints(0.06, 0xd8ff7a);
-  const fireflies = new THREE.Points(flyGeo, flyMat);
-  fireflies.frustumCulled = false;
-  fireflies.renderOrder = 9;
-  group.add(fireflies);
-
   // ---- Chispas ----
   const SPARKS = 150;
   const rs = rng(99);
@@ -293,26 +264,6 @@ export function createWisp(ctx: ModuleCtx): IntroModule {
       moteGeo.attributes.color!.needsUpdate = true;
       motes.visible = alive && p > T.walkStart * 0.5;
 
-      // Luciérnagas: deriva lenta y parpadeo de 4 niveles, ambos función de p e índice.
-      const flyFade = 1 - smooth(T.touch - 0.02, T.touch + 0.03, p);
-      for (let i = 0; i < FLIES; i++) {
-        const f = flies[i]!;
-        flyPos[i * 3] = f.bx + Math.sin(p * f.fx + f.ph) * f.ax;
-        flyPos[i * 3 + 1] = f.by + Math.sin(p * f.fy + f.ph * 2) * 0.35;
-        flyPos[i * 3 + 2] = f.bz + Math.cos(p * f.fx * 0.8 + f.ph) * f.ax;
-        const q = Math.floor((0.5 + 0.5 * Math.sin((p * f.blink + f.bph) * Math.PI * 2)) * 4) / 3;
-        const dx = flyPos[i * 3]! - camera.position.x,
-          dz = flyPos[i * 3 + 2]! - camera.position.z;
-        const near3 = smooth(1.5, 5, Math.hypot(dx, dz));
-        const b = (0.12 + 0.88 * q) * flyFade * near3;
-        flyCol[i * 3] = b * 0.9;
-        flyCol[i * 3 + 1] = b;
-        flyCol[i * 3 + 2] = b * 0.5;
-      }
-      flyGeo.attributes.position!.needsUpdate = true;
-      flyGeo.attributes.color!.needsUpdate = true;
-      fireflies.visible = flyFade > 0.001;
-
       // Chispas: pos = origen + dir·v·e(u) + 0.5·g·u² (analítico, reversible).
       sparkPts.visible = u > 0 && u < 1;
       if (sparkPts.visible) {
@@ -335,10 +286,8 @@ export function createWisp(ctx: ModuleCtx): IntroModule {
     },
     dispose() {
       for (const t of [haloTex, midTex, coreTex, ring]) t.dispose();
-      for (const m of [haloMat, midMat, coreMat, ...ringMats, moteMat, flyMat, sparkMat])
-        m.dispose();
+      for (const m of [haloMat, midMat, coreMat, ...ringMats, moteMat, sparkMat]) m.dispose();
       moteGeo.dispose();
-      flyGeo.dispose();
       sparkGeo.dispose();
     },
   };
