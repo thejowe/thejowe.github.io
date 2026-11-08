@@ -1,20 +1,18 @@
 ---
-/** Contenedor sobrio: superficie sutil, borde fino. Sin sombra pesada ni hover obligatorio. */
+/** Panel de juego (.px-box): superficie con esquinas escalonadas y bisel. Sin hover obligatorio. */
 interface Props {
   as?: 'article' | 'div' | 'section';
 }
 const { as: Tag = 'div' } = Astro.props;
 ---
 
-<Tag class="card">
+<Tag class="card px-box">
   <slot />
 </Tag>
 
 <style>
   .card {
-    padding: var(--space-5);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-m);
+    padding: calc(var(--px) * 5);
+    overflow-wrap: anywhere;
   }
 </style>

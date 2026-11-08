@@ -1,5 +1,6 @@
 ---
 import type { RepoStats } from '../../lib/github';
+import Sprite from '../ui/Sprite.astro';
 
 interface Props {
   repos: readonly RepoStats[];
@@ -12,14 +13,17 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 
 {repos.length > 0 && (
   <section class="other-repos" aria-labelledby="other-repos-title">
-    <Heading id="other-repos-title">Otros repositorios</Heading>
-    <ul>
+    <Heading id="other-repos-title" class="px-title">
+      Otros repositorios
+    </Heading>
+    <ul class="other-repos__grid">
       {repos.map((r) => (
-        <li>
+        <li class="other-repos__slot px-box px-box--sunk">
+          <Sprite name="cursor" class="other-repos__cursor" />
           <a href={r.url} rel="noopener">
             {r.name}
           </a>
-          {r.language && <span class="other-repos__lang">{r.language}</span>}
+          {r.language && <span class="other-repos__lang hud-label">{r.language}</span>}
           {r.description && <span class="other-repos__desc">{r.description}</span>}
         </li>
       ))}

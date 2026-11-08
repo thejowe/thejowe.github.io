@@ -4,6 +4,9 @@ import { site } from '../config/site';
 import ThemeInit from '../components/ui/ThemeInit.astro';
 import ThemeToggle from '../components/ui/ThemeToggle.astro';
 import Footer from '../components/sections/Footer.astro';
+import Sky from '../components/ui/Sky.astro';
+import Sprite from '../components/ui/Sprite.astro';
+import NavLink from '../components/ui/NavLink.astro';
 
 interface Props {
   /** Título de la página; se compone como «título · sitio». Omitir en portada. */
@@ -62,27 +65,32 @@ const isCurrent = (path: string) =>
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <script type="application/ld+json" set:html={personJson} />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#060b12" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/wisp-pixel.woff2" as="font" type="font/woff2" crossorigin />
     <slot name="head" />
   </head>
   <body>
-    <a class="skip-link" href="#contenido">
+    <Sky />
+    <a class="skip-link px-btn" href="#contenido">
       Saltar al contenido
     </a>
-    <header>
+    <header class="hud px-box px-box--lift">
       <a href={`${base}/`} class="site-name">
-        {site.name ?? site.title}
+        <span class="wisp">
+          <Sprite name="wisp" />
+        </span>
+        <span class="site-name-text">{site.name ?? site.title}</span>
       </a>
       <nav aria-label="Principal">
         <ul>
           {nav.map((item) => (
             <li>
-              <a href={item.href} aria-current={isCurrent(item.path) ? 'page' : undefined}>
+              <NavLink href={item.href} current={isCurrent(item.path)}>
                 {item.label}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>

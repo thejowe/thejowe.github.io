@@ -1,0 +1,72 @@
+---
+/**
+ * Sprite pixel art inline (SVG con rectángulos exactos). Se define como filas de texto (ver
+ * src/lib/pixel/bitmap.ts) y se pinta con la paleta del tema: cambia sola entre Noche y Amanecer.
+ *
+ *   <Sprite name="cursor" />                     sprite del registro (src/lib/pixel/sprites)
+ *   <Sprite rows={['.a.', 'aaa']} scale={2} />   sprite suelto
+ *   <Sprite name="moon" label="Luna" />          con `label` es imagen con nombre; sin él, decorativo
+ *
+ * `scale` multiplica la unidad pixel (--px): 1 sprite-pixel = scale × --px píxeles de pantalla.
+ * `fluid` ocupa el 100 % del ancho y recorta por la derecha (bandas de bosque, suelo…).
+ */
+import { buildSprite, DEFAULT_PALETTE, type Palette } from '../../lib/pixel/bitmap';
+import { sprites } from '../../lib/pixel/sprites';
+
+interface Props {
+  name?: string;
+  rows?: readonly string[];
+  palette?: Palette;
+  scale?: number;
+  label?: string;
+  fluid?: boolean;
+  class?: string;
+  /** Atributos extra (incluidos los `data-astro-cid-*` del padre para que sus estilos con ámbito lleguen al SVG). */
+  [attr: string]: unknown;
+}
+
+const {
+  name,
+  rows,
+  palette = {},
+  scale = 1,
+  label,
+  fluid = false,
+  class: cls,
+  ...rest
+} = Astro.props;
+const data = rows ?? (name ? sprites[name] : undefined);
+if (!data) throw new Error(`Sprite desconocido: ${name ?? '(sin nombre ni filas)'}`);
+const built = buildSprite(data);
+const pal: Palette = { ...DEFAULT_PALETTE, ...palette };
+const style = [
+  `width:${fluid ? '100%' : `calc(var(--px) * ${scale * built.width})`}`,
+  `height:calc(var(--px) * ${scale * built.height})`,
+].join(';');
+---
+
+<svg
+  class:list={['sprite', cls]}
+  viewBox={`0 0 ${built.width} ${built.height}`}
+  preserveAspectRatio={fluid ? 'xMinYMax slice' : 'xMidYMid meet'}
+  shape-rendering="crispEdges"
+  style={style}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  {...rest}
+>
+  {built.paths.map((p) => (
+    <path d={p.d} style={`fill:${pal[p.key] ?? 'currentColor'}`} />
+  ))}
+</svg>
+
+<style>
+  .sprite {
+    display: block;
+    flex: none;
+    max-width: none;
+    overflow: visible;
+  }
+</style>

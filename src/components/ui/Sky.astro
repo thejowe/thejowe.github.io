@@ -1,0 +1,120 @@
+---
+/**
+ * Fondo de toda la web: cielo en bandas (sin degradado liso), estrellas pixel que titilan a saltos
+ * y la luna del bosque de la intro. Siempre detrás del contenido. En Amanecer las estrellas se apagan
+ * y la luna queda pálida.
+ */
+import Sprite from './Sprite.astro';
+import { MOON_PALETTE, moonRows } from '../../lib/pixel/moon';
+import { rng } from '../../lib/intro/ps2';
+
+/** Baldosa de estrellas como SVG en data-URI (cuadrados de 1 sprite-píxel = 3 px). */
+function starTile(seed: number, count: number, size = 360) {
+  const r = rng(seed);
+  let rects = '';
+  for (let i = 0; i < count; i++) {
+    const x = Math.floor(r() * (size / 3)) * 3;
+    const y = Math.floor(r() * (size / 3)) * 3;
+    const big = r() > 0.82;
+    const s = big ? 6 : 3;
+    rects += `<rect x="${x}" y="${y}" width="${s}" height="${s}"/>`;
+    if (big)
+      rects += `<rect x="${x + 1.5}" y="${y - 3}" width="3" height="12"/><rect x="${x - 3}" y="${y + 1.5}" width="12" height="3"/>`;
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" shape-rendering="crispEdges" fill="#cfe3ff">${rects}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+const tileA = starTile(3, 26);
+const tileB = starTile(8, 18, 480);
+---
+
+<div class="sky" aria-hidden="true">
+  <div class="stars stars--a" style={`background-image:${tileA}`}></div>
+  <div class="stars stars--b" style={`background-image:${tileB}`}></div>
+</div>
+<div class="moon" aria-hidden="true">
+  <Sprite rows={moonRows} palette={MOON_PALETTE} />
+</div>
+
+<style>
+  .sky {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    /* Cielo en bandas duras: el degradado "pixelado" de un juego de 16 bits */
+    background:
+      linear-gradient(
+        var(--sky-1) 0 18%,
+        var(--sky-2) 18% 36%,
+        var(--sky-3) 36% 54%,
+        var(--sky-4) 54% 72%,
+        var(--sky-5) 72%
+      ),
+      var(--bg);
+  }
+  .stars {
+    position: absolute;
+    inset: 0;
+    opacity: calc(var(--stars-opacity) * 0.7);
+    image-rendering: pixelated;
+  }
+  .stars--b {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stars--a {
+      animation: twinkle-a 4.8s steps(1, end) infinite;
+    }
+    .stars--b {
+      opacity: calc(var(--stars-opacity) * 0.7);
+      animation: twinkle-b 4.8s steps(1, end) infinite;
+    }
+    @keyframes twinkle-a {
+      0%,
+      100% {
+        opacity: calc(var(--stars-opacity) * 0.75);
+      }
+      50% {
+        opacity: calc(var(--stars-opacity) * 0.3);
+      }
+    }
+    @keyframes twinkle-b {
+      0%,
+      100% {
+        opacity: calc(var(--stars-opacity) * 0.3);
+      }
+      50% {
+        opacity: calc(var(--stars-opacity) * 0.75);
+      }
+    }
+  }
+
+  /* La luna del bosque: parte del documento (se va al hacer scroll), nunca debajo de texto largo */
+  .moon {
+    position: absolute;
+    top: calc(var(--px) * 6);
+    right: max(2vw, calc(var(--px) * 2));
+    z-index: -1;
+    pointer-events: none;
+    image-rendering: pixelated;
+  }
+  /* Tablet: la cabecera sigue en dos filas (~140 px): la luna baja justo debajo */
+  @media (min-width: 40.01rem) and (max-width: 60rem) {
+    .moon {
+      top: calc(var(--px) * 36);
+    }
+  }
+  /* Móvil: la cabecera ocupa ~160 px; la luna baja, más pequeña, al hueco libre junto a la etiqueta */
+  @media (max-width: 40rem) {
+    .moon {
+      top: calc(var(--px) * 56);
+      right: calc(var(--px) * 2);
+      transform: scale(0.5);
+      transform-origin: top right;
+    }
+  }
+  :global(:root[data-theme='light']) .moon {
+    opacity: 0.55;
+  }
+</style>

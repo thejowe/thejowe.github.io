@@ -1,5 +1,8 @@
 ---
-/** Contenedor de «Sobre mí». El texto lo aporta `contenido` por el slot. */
+/** Contenedor de «Sobre mí»: ficha de personaje + diálogo. El texto lo aporta `contenido` por el slot. */
+import { site } from '../../config/site';
+import Sprite from '../ui/Sprite.astro';
+
 interface Props {
   heading?: string;
 }
@@ -8,17 +11,73 @@ const hasContent = Astro.slots.has('default');
 ---
 
 <section class="about" aria-labelledby="about-title">
-  <h1 id="about-title">{heading}</h1>
-  <div class="prose">{hasContent ? <slot /> : <p class="empty">Texto pendiente.</p>}</div>
+  <h1 id="about-title" class="px-title">
+    {heading}
+  </h1>
+
+  <aside class="sheet px-box px-box--lift" aria-label="Ficha">
+    <p class="hud-label">Ficha</p>
+    <div class="portrait px-box px-box--sunk" aria-hidden="true">
+      <Sprite name="wanderer" scale={4} />
+    </div>
+    <p class="name">{site.name ?? site.title}</p>
+    <p class="handle hud-label">@{site.githubUser}</p>
+    {site.tagline && <p class="role">{site.tagline}</p>}
+  </aside>
+
+  <div class="dialog px-box px-box--lift">
+    <p class="speaker hud-label">{site.name ?? site.title}</p>
+    <div class="prose">{hasContent ? <slot /> : <p class="empty">Texto pendiente.</p>}</div>
+  </div>
 </section>
 
 <style>
   .about {
     display: grid;
     gap: var(--space-6);
+    align-items: start;
   }
   .about h1 {
-    margin: 0;
+    font-size: var(--step-3);
+  }
+  .sheet {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+    padding: var(--space-4) var(--space-5) var(--space-5);
+  }
+  .portrait {
+    padding: var(--space-3);
+    margin: var(--px) 0 var(--space-2) var(--px);
+    background: var(--bg-2);
+  }
+  .name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--step-2);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .handle {
+    color: var(--accent);
+  }
+  .role {
+    color: var(--muted);
+    font-size: var(--step-0);
+    line-height: 1.5;
+  }
+  .dialog {
+    padding: var(--space-5);
+    margin-top: calc(var(--px) * 3);
+  }
+  .speaker {
+    display: inline-block;
+    margin: calc(var(--space-5) * -1 - var(--px) * 3) 0 var(--space-4);
+    padding: var(--px) calc(var(--px) * 3);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+    box-shadow: var(--px) var(--px) 0 0 var(--shadow);
   }
   .prose {
     display: grid;
@@ -27,24 +86,52 @@ const hasContent = Astro.slots.has('default');
   }
   .prose :global(p) {
     font-size: var(--step-0);
+    overflow-wrap: anywhere;
   }
   /* Primer párrafo como entrada: un solo salto de escala */
   .prose :global(p:first-child) {
     font-size: var(--step-1);
-    line-height: 1.45;
+    line-height: 1.33;
+  }
+  /* Cursor al final del último diálogo */
+  .prose :global(p:last-child)::after {
+    content: '';
+    display: inline-block;
+    width: calc(var(--px) * 3);
+    height: 0.85em;
+    margin-left: var(--px);
+    background: var(--accent);
+    vertical-align: -0.05em;
   }
   .empty {
     color: var(--muted);
   }
+  @media (prefers-reduced-motion: no-preference) {
+    .prose :global(p:last-child)::after {
+      animation: caret-blink 1.1s steps(1, end) infinite;
+    }
+    @keyframes caret-blink {
+      50% {
+        opacity: 0;
+      }
+    }
+  }
   @media (min-width: 64rem) {
     .about {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      column-gap: var(--space-8);
-      align-items: start;
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      column-gap: var(--space-7);
+      grid-template-areas:
+        'title title'
+        'sheet dialog';
     }
     .about h1 {
-      position: sticky;
-      top: var(--space-5);
+      grid-area: title;
+    }
+    .sheet {
+      grid-area: sheet;
+    }
+    .dialog {
+      grid-area: dialog;
     }
   }
 </style>

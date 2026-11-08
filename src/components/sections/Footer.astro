@@ -1,18 +1,53 @@
 ---
+/**
+ * Pie: bosque de pinos pixel, luciérnagas, suelo con hierba y un panel con el copyright y los
+ * enlaces. El texto va siempre sobre el panel (superficie del tema): contraste AA en Noche y Amanecer.
+ */
 import { site } from '../../config/site';
+import { forestBand } from '../../lib/pixel/forest';
+import { groundRows } from '../../lib/pixel/sprites/chrome';
+import Sprite from '../ui/Sprite.astro';
+
+const forest = forestBand(640, 28, 7, 1.15);
+const ground = groundRows(640);
+// Luciérnagas: posición en el bosque y desfase del titileo
+const flies = [
+  { x: '8%', y: '22%', d: '0s' },
+  { x: '31%', y: '48%', d: '-1.1s' },
+  { x: '57%', y: '18%', d: '-2.3s' },
+  { x: '78%', y: '40%', d: '-0.6s' },
+  { x: '93%', y: '14%', d: '-1.8s' },
+];
 ---
 
 <footer>
-  <p>
-    &copy; {new Date().getFullYear()} {site.name ?? site.title}
-  </p>
-  <ul aria-label="Enlaces">
-    {site.social.map((link) => (
-      <li>
-        <a href={link.url} rel="me noopener">
-          {link.label}
-        </a>
-      </li>
+  <div class="forest" aria-hidden="true">
+    <Sprite rows={forest} fluid />
+    {flies.map((f) => (
+      <span class="firefly" style={`--x:${f.x};--y:${f.y};--d:${f.d}`}>
+        <Sprite name="firefly" />
+      </span>
     ))}
-  </ul>
+  </div>
+  <div class="ground">
+    <Sprite rows={ground} fluid class="ground-strip" />
+    <div class="foot px-box px-box--lift">
+      <p class="foot-copy">
+        <Sprite name="wisp" />
+        <span>
+          &copy; {new Date().getFullYear()} {site.name ?? site.title}
+        </span>
+      </p>
+      <ul aria-label="Enlaces">
+        {site.social.map((link) => (
+          <li>
+            <a href={link.url} rel="me noopener">
+              {link.label}
+              <Sprite name="arrow-ext" palette={{ a: 'currentColor' }} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
 </footer>

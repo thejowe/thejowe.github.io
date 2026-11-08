@@ -1,6 +1,8 @@
 ---
 import type { Project } from '../../types/project';
 import type { RepoStats } from '../../lib/github';
+import Sprite from '../ui/Sprite.astro';
+import { projectIcon } from '../../lib/pixel/sprites/projects';
 
 interface Props {
   project: Project;
@@ -18,38 +20,83 @@ const pushed = stats?.pushedAt
       new Date(stats.pushedAt),
     )
   : null;
+
+const statusLabel: Record<Project['status'], { text: string; hearts: number }> = {
+  active: { text: 'Activo', hearts: 3 },
+  maintained: { text: 'Mantenido', hearts: 2 },
+  prototype: { text: 'Prototipo', hearts: 1 },
+  archived: { text: 'Archivado', hearts: 0 },
+};
+const status = statusLabel[project.status];
+
+// «Frescura» del último guardado: 8 bloques, uno menos por cada 3 meses sin actividad.
+const BLOCKS = 8;
+const fresh = stats?.pushedAt
+  ? Math.max(
+      1,
+      BLOCKS -
+        Math.floor((Date.now() - new Date(stats.pushedAt).getTime()) / (1000 * 60 * 60 * 24 * 90)),
+    )
+  : 0;
+const langs = stats?.languages.length ? stats.languages : stats?.language ? [stats.language] : [];
 ---
 
-<article class="project-card" data-slug={project.slug}>
-  <Heading class="project-card__title">
-    {href ? <a href={href}>{project.title}</a> : project.title}
-  </Heading>
+<article class="project-card px-box px-box--lift" data-slug={project.slug}>
+  <Sprite name="cursor" scale={2} class="project-card__cursor" />
+  <div class="project-card__icon px-box px-box--sunk">
+    <Sprite name={projectIcon(project.slug)} scale={2} />
+  </div>
+  <div class="project-card__head">
+    <p class="hud-label">Misión · {project.year}</p>
+    <Heading class="project-card__title px-title">
+      {href ? <a href={href}>{project.title}</a> : project.title}
+    </Heading>
+  </div>
   <p class="project-card__summary">{project.summary}</p>
-  <ul class="project-card__stack" aria-label="Tecnologías">
+  <ul class="chips project-card__stack" aria-label="Tecnologías">
     {project.stack.map((tech) => (
       <li>{tech}</li>
     ))}
   </ul>
-  <dl class="project-card__meta">
+  <dl class="project-card__hud">
     <div>
-      <dt>Año</dt>
-      <dd>{project.year}</dd>
+      <dt class="hud-label">Estado</dt>
+      <dd>
+        <span class="hearts" aria-hidden="true">
+          {[0, 1, 2].map((i) => (
+            <Sprite name="heart" palette={i < status.hearts ? {} : { a: 'var(--line)' }} />
+          ))}
+        </span>
+        {status.text}
+      </dd>
     </div>
     {stats && (
-      <>
-        <div>
-          <dt>Estrellas</dt>
-          <dd>{stats.stars}</dd>
-        </div>
-        {pushed && (
-          <div>
-            <dt>Última actividad</dt>
-            <dd>
-              <time datetime={stats.pushedAt ?? undefined}>{pushed}</time>
-            </dd>
-          </div>
-        )}
-      </>
+      <div>
+        <dt class="hud-label">Estrellas</dt>
+        <dd>
+          <Sprite name="star" palette={{ y: 'var(--accent)' }} />
+          {stats.stars}
+        </dd>
+      </div>
+    )}
+    {langs.length > 0 && (
+      <div>
+        <dt class="hud-label">Lenguajes</dt>
+        <dd>{langs.slice(0, 3).join(' · ')}</dd>
+      </div>
+    )}
+    {pushed && (
+      <div>
+        <dt class="hud-label">Último guardado</dt>
+        <dd>
+          <time datetime={stats?.pushedAt ?? undefined}>{pushed}</time>
+          <span class="blocks" aria-hidden="true">
+            {Array.from({ length: BLOCKS }, (_, i) => (
+              <i class:list={{ on: i < fresh }} />
+            ))}
+          </span>
+        </dd>
+      </div>
     )}
   </dl>
 </article>

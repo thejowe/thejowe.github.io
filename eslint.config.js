@@ -12,6 +12,7 @@ export default [
       'node_modules/',
       'tests/artifacts/',
       'public/',
+      'skills-propias/',
       '.agents/',
       '.claude/',
     ],

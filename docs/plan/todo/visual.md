@@ -129,3 +129,13 @@ Pendiente del usuario/dispositivo real: fps y TBT con GPU y CPU móvil reales (a
 - Skills y agentes: `impeccable`, `design-taste-frontend`, `emil-design-eng`, `apple-design`, `high-end-visual-design`, `animation-vocabulary`, `motion-advanced`, `ui-taste`, `gsap-*`, `animate`, `motion-doctrine`; agentes de bosque, manos y luz en paralelo; `comprobador` verificó (ver hallazgos arriba).
 - Fuera de alcance tocado: `package.json`/lock (`gsap`, `three`), `playwright.config.ts` (reduced-motion por defecto en e2e), `tests/e2e/`, `lighthouserc.json`.
 - DECISIÓN (usuario, opción 1): la home asume un rendimiento Lighthouse menor por el peso de three (~560 KB) y su arranque; `lighthouserc.json` exige ≥ 0.55 solo en `/` (resto ≥ 0.95). Pendiente: medir fps/TBT en dispositivo real.
+
+## Rediseño UI pixel art nocturno (2026-11-07)
+- [x] [Claude] Toda la web en el lenguaje de la intro (pixel art PS2 nocturno): tokens Noche (defecto) / Amanecer, primitivas `px-box`/`px-btn`, sprites ASCII→SVG, cielo en bandas + estrellas + luna del bosque, bosque de pinos pixel, cabecera HUD con menú de cursor, pie con bosque, héroe con diálogo y luz, registro de misiones (destacado + `/proyectos`), ficha (sobre mí), punto de guardado (contacto), «game over» (404). Contrato en `docs/plan/DISENO-PIXEL.md`.
+- [x] Tipografía propia **Wisp Pixel** (Regular/Bold, rejilla de 12 px por em; `scripts/pixel-font/`, `npm run build:font`; woff2 en `public/fonts/`). Pixelify Sans queda solo como respaldo.
+- [x] Toggle de tema: Noche por defecto (ya no sigue `prefers-color-scheme`); Amanecer con `data-theme="light"`. Tests de tema adaptados.
+- [x] Skills y agentes: impeccable, design-taste-frontend, ui-taste, high-end-visual-design, emil-design-eng, apple-design, frontend-design, redesign-existing-projects, accessibility, web-design-guidelines (criterios), animate, motion-doctrine; agentes en paralelo (tipógrafo, chrome, secciones, proyectos).
+- [x] `codex review`: path traversal en el script de capturas, 3 columnas de proyectos a 768, atributos de ámbito en `Sprite` → corregidos.
+- Verificado: check/lint/format/unit/e2e (37)/links, 375/768/1440 × Noche/Amanecer sin scroll horizontal ni errores de consola. Pendiente: Lighthouse de la nueva home y pasada del `comprobador` con la UI completa.
+- Fuera de alcance tocado: `package.json` (opentype.js, wawoff2, script `build:font`), `scripts/pixel-font/`, `tests/e2e/theme-keyboard.spec.ts`, `.prettierignore`/`eslint.config.js` (ignorar `skills-propias/`), `src/layouts/Base.astro`.
+- Nueva skill portable `visual-craft` en `skills-propias/` (instalada también en `~/.claude/skills`).

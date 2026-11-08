@@ -3,6 +3,7 @@ import type { Project } from '../../types/project';
 import type { RepoStats } from '../../lib/github';
 import { repoName } from '../../data/projects';
 import ProjectCard from './ProjectCard.astro';
+import Sprite from '../ui/Sprite.astro';
 
 interface Props {
   projects: Project[];
@@ -19,7 +20,7 @@ const statsOf = (p: Project) => {
 };
 ---
 
-{projects.length > 0 && (
+{projects.length > 0 ? (
   <ul class="project-list" aria-label={label}>
     {projects.map((p) => (
       <li>
@@ -27,4 +28,10 @@ const statsOf = (p: Project) => {
       </li>
     ))}
   </ul>
+) : (
+  <div class="project-empty px-box px-box--sunk">
+    <Sprite name="scroll" scale={2} />
+    <p class="project-empty__title">Sin misiones aún</p>
+    <p class="hud-label">El registro está vacío. Vuelve pronto.</p>
+  </div>
 )}

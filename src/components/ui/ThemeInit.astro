@@ -1,7 +1,8 @@
 ---
 /**
  * Va en <head> de Base.astro, ANTES de cualquier CSS/bloque de render.
- * Aplica el tema guardado antes del primer pintado (sin flash). Sin dependencias.
+ * Noche es el tema por defecto (sin atributo); aquí solo se aplica el guardado antes del primer
+ * pintado (sin flash). Ya no se sigue prefers-color-scheme. Sin dependencias.
  */
 ---
 
@@ -10,6 +11,6 @@
     const t = localStorage.getItem('theme');
     if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
   } catch {
-    /* almacenamiento no disponible: se usa el tema del sistema */
+    /* almacenamiento no disponible: se queda la Noche por defecto */
   }
 </script>

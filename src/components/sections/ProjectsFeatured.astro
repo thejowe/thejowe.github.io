@@ -1,6 +1,6 @@
 ---
 import type { Project } from '../../types/project';
-import Tag from '../ui/Tag.astro';
+import Sprite from '../ui/Sprite.astro';
 
 interface Props {
   projects: Project[];
@@ -8,36 +8,55 @@ interface Props {
 }
 const { projects, heading = 'Proyectos destacados' } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const statusLabel: Record<Project['status'], string> = {
+  active: 'En marcha',
+  maintained: 'Mantenido',
+  archived: 'Archivado',
+  prototype: 'Prototipo',
+};
 ---
 
 <section class="section" id="proyectos" aria-labelledby="proyectos-title">
-  <h2 id="proyectos-title">{heading}</h2>
+  <h2 id="proyectos-title" class="px-title">
+    {heading}
+  </h2>
   {projects.length === 0 ? (
-    <p class="empty">Aún no hay proyectos destacados.</p>
+    <p class="empty px-box px-box--sunk">Aún no hay proyectos destacados.</p>
   ) : (
-    <ol class="list">
+    <ol class="log">
       {projects.map((p, i) => (
-        <li class="row">
-          <span class="num" aria-hidden="true">
-            {String(i + 1).padStart(2, '0')}
-          </span>
+        <li class="quest px-box px-box--lift">
+          <div class="icon px-box px-box--sunk" aria-hidden="true">
+            <Sprite name="questPhone" scale={3} />
+          </div>
           <div class="body">
+            <p class="hud-label">Misión {String(i + 1).padStart(2, '0')}</p>
             <h3>
+              <Sprite name="cursor" scale={1} class="cursor" />
               <a href={`${base}/proyectos/${p.slug}`}>{p.title}</a>
             </h3>
-            <p>{p.summary}</p>
+            <p class="summary">{p.summary}</p>
             <ul class="stack" aria-label="Tecnologías">
               {p.stack.map((s) => (
-                <li>
-                  <Tag>{s}</Tag>
-                </li>
+                <li class="chip">{s}</li>
               ))}
             </ul>
           </div>
-          <p class="meta">
-            <span>{p.year}</span>
-            <span>{p.role}</span>
-          </p>
+          <dl class="hud">
+            <div>
+              <dt class="hud-label">Año</dt>
+              <dd>{p.year}</dd>
+            </div>
+            <div>
+              <dt class="hud-label">Estado</dt>
+              <dd class="status">{statusLabel[p.status]}</dd>
+            </div>
+            <div>
+              <dt class="hud-label">Rol</dt>
+              <dd>{p.role}</dd>
+            </div>
+          </dl>
         </li>
       ))}
     </ol>
@@ -45,68 +64,52 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 </section>
 
 <style>
-  .list {
-    border-top: 1px solid var(--line);
-  }
-  .row {
-    position: relative;
+  .log {
     display: grid;
-    grid-template-columns: 2rem 1fr;
-    gap: var(--space-2) var(--space-4);
-    padding: var(--space-6) 0;
-    border-bottom: 1px solid var(--line);
+    gap: var(--space-6);
+  }
+  .quest {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    margin: var(--px) calc(var(--px) * 4) calc(var(--px) * 4) var(--px);
     isolation: isolate;
   }
-  /* Fondo de hover que sobresale del texto sin ensanchar las líneas */
-  .row::before {
-    content: '';
-    position: absolute;
-    inset: 0 calc(var(--space-4) * -1);
-    z-index: -1;
-    background: var(--surface);
-    border-radius: var(--radius-s);
-    opacity: 0;
-    transition: opacity var(--dur-base) var(--ease-out);
-  }
-  .row:hover::before {
-    opacity: 1;
-  }
-  .row:hover .num {
-    color: var(--accent);
-  }
-  .num {
-    transition: color var(--dur-base) var(--ease-out);
-  }
-  .num,
-  .meta {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    color: var(--muted);
-  }
-  .num {
-    padding-top: 0.5em;
+  .icon {
+    display: grid;
+    place-items: center;
+    width: max-content;
+    align-self: start;
+    padding: var(--space-3);
+    margin: var(--px);
   }
   .body {
     display: grid;
     gap: var(--space-3);
+    min-width: 0;
   }
   h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     font-size: var(--step-2);
+    overflow-wrap: anywhere;
   }
   h3 a {
     text-decoration: none;
   }
-  /* El enlace cubre toda la fila: objetivo grande, sin depender de hover */
+  /* El enlace cubre toda la misión: objetivo grande, sin depender de hover */
   h3 a::after {
     content: '';
     position: absolute;
     inset: 0;
   }
-  h3 a:hover,
-  .row:hover h3 a {
+  .cursor {
     color: var(--accent);
+    visibility: hidden;
   }
-  .body > p {
+  .summary {
     color: var(--muted);
   }
   .stack {
@@ -114,35 +117,78 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     flex-wrap: wrap;
     gap: var(--space-2);
   }
-  .meta {
-    grid-column: 2;
-    display: flex;
-    gap: var(--space-4);
-    max-width: none;
+  .chip {
+    padding: var(--px) calc(var(--px) * 3);
+    margin: var(--px);
+    background: var(--bg-2);
+    color: var(--ink);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    box-shadow:
+      0 calc(var(--px) * -1) 0 0 var(--line),
+      0 var(--px) 0 0 var(--line),
+      calc(var(--px) * -1) 0 0 0 var(--line),
+      var(--px) 0 0 0 var(--line);
+  }
+  .hud {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: var(--space-2) var(--space-6);
+    padding-top: var(--space-4);
+    border-top: var(--px) dotted var(--line);
+  }
+  .hud dd {
+    margin: 0;
+  }
+  .status {
+    color: var(--moss);
   }
   .empty {
+    padding: var(--space-5);
     color: var(--muted);
   }
+
+  .quest:hover h3 a,
+  .quest:focus-within h3 a {
+    color: var(--accent);
+  }
+  .quest:hover,
+  .quest:focus-within {
+    --edge: var(--accent);
+  }
+  .quest:hover .cursor,
+  .quest:focus-within .cursor {
+    visibility: visible;
+  }
+
   @media (min-width: 48rem) {
-    .row {
-      grid-template-columns: 3rem 1fr 12rem;
-      column-gap: var(--space-5);
-      align-items: start;
+    .quest {
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--space-6);
     }
-    .meta {
-      grid-column: 3;
-      flex-direction: column;
-      gap: var(--space-1);
-      text-align: right;
+    .hud {
+      grid-column: 1 / -1;
     }
-    .row h3 {
-      transition: color var(--dur-base) var(--ease-out);
+    .icon {
+      padding: var(--space-4);
     }
   }
-  /* Sin transform en el h3: crearía un contenedor para el ::after absoluto y recortaría el área clicable */
-  @media (min-width: 48rem) {
-    .row:hover h3 {
-      color: var(--accent);
+  @media (max-width: 30rem) {
+    .hud {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .quest:hover .cursor,
+    .quest:focus-within .cursor {
+      animation: cursor-nudge 0.8s steps(1, end) infinite;
+    }
+    @keyframes cursor-nudge {
+      50% {
+        transform: translateX(var(--px));
+      }
     }
   }
 </style>

@@ -1,89 +1,242 @@
 ---
 import { site } from '../../config/site';
-import Button from '../ui/Button.astro';
+import Sprite from '../ui/Sprite.astro';
 import Intro from './Intro.astro';
+import { forestBand } from '../../lib/pixel/forest';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const github = site.social.find((s) => s.label === 'GitHub');
+const name = site.name ?? site.title;
+// 400 celdas de ancho: a 4 px/celda cubre hasta 1600 px sin escalar los pinos
+const forest = forestBand(400, 36, 11, 1);
 ---
 
 <Intro />
 
 <section class="hero" aria-labelledby="hero-title">
-  <p class="eyebrow rise" style="--i: 0">
-    @{site.githubUser}
-  </p>
-  <!-- Sin animación en el h1: es el candidato a LCP -->
-  <h1 id="hero-title">{site.name ?? site.title}</h1>
-  <div class="foot">
+  <div class="stage">
+    <div class="title-block">
+      <p class="hud-label tag-line">@{site.githubUser}</p>
+      <!-- Sin animación en el h1: es el candidato a LCP -->
+      <h1 id="hero-title" class="px-title">
+        {name}
+      </h1>
+    </div>
+
+    <div class="wisp" aria-hidden="true">
+      <Sprite name="wispHalo" scale={2} class="halo" />
+      <Sprite name="wispCore" scale={2} class="core" />
+      <Sprite name="spark" scale={1} class="spark spark--a" />
+      <Sprite name="spark" scale={1} class="spark spark--b" />
+      <Sprite name="spark" scale={1} class="spark spark--c" />
+    </div>
+
     {site.tagline && (
-      <p class="tagline rise" style="--i: 1">
-        {site.tagline}
-      </p>
+      <div class="dialog px-box px-box--lift rise" style="--i: 1">
+        <p class="speaker hud-label">{name}</p>
+        <p class="tagline px-caret">{site.tagline}</p>
+      </div>
     )}
+
     <p class="actions rise" style="--i: 2">
-      <Button href={`${base}/#proyectos`}>Ver proyectos</Button>
+      <a class="px-btn" href={`${base}/#proyectos`}>
+        <Sprite name="cursor" scale={1} palette={{ a: 'var(--accent-ink)' }} />
+        Ver proyectos
+      </a>
       {github && (
-        <Button href={github.url} variant="ghost" external>
-          GitHub
-        </Button>
+        <a class="px-btn px-btn--ghost" href={github.url} target="_blank" rel="noopener noreferrer">
+          {github.label}
+        </a>
       )}
     </p>
+  </div>
+
+  <div class="forest" aria-hidden="true">
+    <Sprite rows={forest} fluid />
   </div>
 </section>
 
 <style>
   .hero {
+    position: relative;
+    padding-top: var(--space-5);
+  }
+  .stage {
+    position: relative;
     display: grid;
     gap: var(--space-5);
-    padding-top: var(--space-6);
+    justify-items: start;
+    padding-bottom: calc(var(--px) * 30);
   }
-  /* Marca de acento antes del usuario: un único gesto de color en la cabecera */
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-  .eyebrow::before {
-    content: '';
-    width: 2rem;
-    height: 1px;
-    background: var(--accent);
+  .tag-line {
+    margin-bottom: var(--space-2);
   }
   h1 {
     font-size: var(--step-5);
-    font-weight: 400;
-    letter-spacing: -0.05em;
-    line-height: 0.9;
-    margin-left: -0.04em;
+    line-height: 1;
+    overflow-wrap: anywhere;
   }
-  .foot {
-    display: grid;
-    gap: var(--space-5);
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--line);
+
+  /* La luz: halo en bandas duras que titila a saltos + chispas que parpadean */
+  .wisp {
+    position: absolute;
+    right: 0;
+    bottom: calc(var(--px) * 6);
+    width: calc(var(--px) * 62);
+    height: calc(var(--px) * 62);
+    pointer-events: none;
+  }
+  .wisp :global(.halo),
+  .wisp :global(.core),
+  .wisp :global(.spark) {
+    position: absolute;
+  }
+  .wisp :global(.halo) {
+    inset: 0;
+    opacity: 0.2;
+  }
+  .wisp :global(.core) {
+    left: calc(50% - var(--px) * 9);
+    top: calc(50% - var(--px) * 9);
+  }
+  .wisp :global(.spark--a) {
+    left: 8%;
+    top: 24%;
+  }
+  .wisp :global(.spark--b) {
+    right: 6%;
+    top: 62%;
+  }
+  .wisp :global(.spark--c) {
+    left: 30%;
+    bottom: 4%;
+  }
+  .wisp :global(.spark) {
+    opacity: 0.9;
+  }
+
+  /* Panel de diálogo */
+  .dialog {
+    width: min(100%, calc(var(--px) * 150));
+    margin: var(--px);
+    padding: var(--space-4) var(--space-5) var(--space-5);
+    z-index: 1;
+  }
+  .speaker {
+    display: inline-block;
+    margin: calc(var(--space-4) * -1 - var(--px) * 3) 0 var(--space-3);
+    padding: var(--px) calc(var(--px) * 3);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+    box-shadow: var(--px) var(--px) 0 0 var(--shadow);
   }
   .tagline {
     font-size: var(--step-1);
-    color: var(--muted);
-    max-width: 34ch;
-    line-height: 1.35;
+    line-height: 1.33;
+    max-width: 30ch;
+    overflow-wrap: anywhere;
   }
   .actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-2);
     max-width: none;
+    z-index: 1;
   }
+  .actions :global(.btn-cursor) {
+    color: var(--accent-ink);
+  }
+
+  /* Bosque a todo el ancho de la ventana, al pie del hero */
+  .forest {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--space-9) * -1);
+    width: 100vw;
+    margin-left: -50vw;
+    pointer-events: none;
+    z-index: 0;
+  }
+  :global(body:has(.hero)) {
+    overflow-x: clip;
+  }
+  .forest::after {
+    /* tramado al pie para fundir el suelo con la página */
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: calc(var(--px) * 6);
+    background: var(--pine);
+  }
+
   @media (min-width: 48rem) {
     .hero {
-      padding-top: var(--space-8);
-      gap: var(--space-6);
+      padding-top: var(--space-7);
     }
-    .foot {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
-      gap: var(--space-6);
+    .stage {
+      padding-bottom: calc(var(--px) * 34);
+    }
+  }
+  @media (min-width: 64rem) {
+    .wisp {
+      right: 10%;
+      bottom: auto;
+      top: calc(var(--px) * 22);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .wisp :global(.halo) {
+      animation: halo-flicker 2.4s steps(1, end) infinite;
+    }
+    .wisp :global(.core) {
+      animation: core-flicker 2.4s steps(1, end) infinite;
+    }
+    .wisp :global(.spark) {
+      animation: spark-blink 1.8s steps(1, end) infinite;
+    }
+    .wisp :global(.spark--b) {
+      animation-delay: -0.6s;
+    }
+    .wisp :global(.spark--c) {
+      animation-delay: -1.2s;
+    }
+    @keyframes halo-flicker {
+      0%,
+      100% {
+        opacity: 0.2;
+      }
+      25% {
+        opacity: 0.28;
+      }
+      50% {
+        opacity: 0.16;
+      }
+      75% {
+        opacity: 0.24;
+      }
+    }
+    @keyframes core-flicker {
+      0%,
+      100% {
+        transform: none;
+      }
+      40% {
+        transform: translateY(calc(var(--px) * -1));
+      }
+      70% {
+        transform: translateY(var(--px));
+      }
+    }
+    @keyframes spark-blink {
+      0%,
+      100% {
+        opacity: 0.9;
+      }
+      50% {
+        opacity: 0;
+      }
     }
   }
 </style>

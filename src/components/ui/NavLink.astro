@@ -1,4 +1,7 @@
 ---
+/** Opción de menú de juego: el cursor aparece en hover, foco y página actual (estilos en chrome.css). */
+import Sprite from './Sprite.astro';
+
 interface Props {
   href: string;
   current?: boolean;
@@ -7,5 +10,8 @@ const { href, current = false } = Astro.props;
 ---
 
 <a class="nav-link" href={href} aria-current={current ? 'page' : undefined}>
-  <slot />
+  <Sprite name="cursor" class="nav-cursor" />
+  <span class="nav-text">
+    <slot />
+  </span>
 </a>

@@ -10,6 +10,9 @@ const list = sortByYearDesc(projects);
 ---
 
 <Base title="Proyectos" description="Cofounder, la app en la que trabajo.">
-  <h1>Proyectos</h1>
+  <header class="page-head">
+    <p class="hud-label">Registro de misiones · {list.length}</p>
+    <h1 class="px-title">Proyectos</h1>
+  </header>
   <ProjectList projects={list} repos={snapshot.repos} headingLevel={2} />
 </Base>

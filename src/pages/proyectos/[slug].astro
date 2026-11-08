@@ -1,9 +1,11 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
+import Sprite from '../../components/ui/Sprite.astro';
 import { site } from '../../config/site';
 import { getFeatured, repoName } from '../../data/projects';
 import { getGithubSnapshot, statsFor } from '../../lib/github';
+import { projectIcon } from '../../lib/pixel/sprites/projects';
 import type { Project } from '../../types/project';
 
 export const getStaticPaths = (async () => {
@@ -27,75 +29,113 @@ const pushed = stats?.pushedAt
     )
   : null;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const statusText: Record<Project['status'], string> = {
+  active: 'Activo',
+  maintained: 'Mantenido',
+  prototype: 'Prototipo',
+  archived: 'Archivado',
+};
 ---
 
 <Base title={project.title} description={project.summary}>
   <article class="project-detail">
-    <header>
-      <p>
-        <a href={`${base}/`}>Inicio</a>
-      </p>
-      <h1>{project.title}</h1>
-      <p>{project.summary}</p>
+    <header class="project-detail__head">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <ol>
+          <li>
+            <a href={`${base}/`}>Inicio</a>
+          </li>
+          <li>
+            <a href={`${base}/proyectos/`}>Proyectos</a>
+          </li>
+          <li>
+            <span aria-current="page">{project.title}</span>
+          </li>
+        </ol>
+      </nav>
+      <h1 class="px-title">{project.title}</h1>
+      <div class="project-detail__intro px-box px-box--lift">
+        <div class="project-detail__icon px-box px-box--sunk">
+          <Sprite name={projectIcon(project.slug)} scale={2} />
+        </div>
+        <p>{project.summary}</p>
+      </div>
     </header>
 
-    <dl class="project-detail__meta">
-      <div>
-        <dt>Rol</dt>
-        <dd>{project.role}</dd>
-      </div>
-      <div>
-        <dt>Año</dt>
-        <dd>{project.year}</dd>
-      </div>
-      <div>
-        <dt>Estado</dt>
-        <dd>{project.status}</dd>
-      </div>
-      {stats && (
-        <div>
-          <dt>Estrellas</dt>
-          <dd>{stats.stars}</dd>
+    <section class="project-detail__sheet" aria-labelledby="sheet-title">
+      <h2 id="sheet-title" class="hud-label">
+        Ficha del objeto
+      </h2>
+      <dl>
+        <div class="px-box px-box--sunk">
+          <dt class="hud-label">Rol</dt>
+          <dd>{project.role}</dd>
         </div>
-      )}
-      {pushed && (
-        <div>
-          <dt>Última actividad</dt>
-          <dd>
-            <time datetime={stats?.pushedAt ?? undefined}>{pushed}</time>
-          </dd>
+        <div class="px-box px-box--sunk">
+          <dt class="hud-label">Año</dt>
+          <dd>{project.year}</dd>
         </div>
-      )}
-    </dl>
+        <div class="px-box px-box--sunk">
+          <dt class="hud-label">Estado</dt>
+          <dd>{statusText[project.status]}</dd>
+        </div>
+        {stats && (
+          <div class="px-box px-box--sunk">
+            <dt class="hud-label">Estrellas</dt>
+            <dd>
+              <Sprite name="star" palette={{ y: 'var(--accent)' }} />
+              {stats.stars}
+            </dd>
+          </div>
+        )}
+        {pushed && (
+          <div class="px-box px-box--sunk">
+            <dt class="hud-label">Última actividad</dt>
+            <dd>
+              <time datetime={stats?.pushedAt ?? undefined}>{pushed}</time>
+            </dd>
+          </div>
+        )}
+      </dl>
+    </section>
 
-    <section aria-labelledby="stack-title">
-      <h2 id="stack-title">Tecnologías</h2>
-      <ul>
+    <section class="project-detail__stack" aria-labelledby="stack-title">
+      <h2 id="stack-title" class="hud-label">
+        Tecnologías
+      </h2>
+      <ul class="chips">
         {languages.map((l) => (
           <li>{l}</li>
         ))}
       </ul>
     </section>
 
-    {(project.repo || project.demo) && (
-      <nav aria-label="Enlaces del proyecto">
-        <ul>
-          {project.demo && (
-            <li>
-              <a href={project.demo} rel="noopener">
-                Ver demo
-              </a>
-            </li>
-          )}
-          {project.repo && (
-            <li>
-              <a href={project.repo} rel="noopener">
-                Ver código en GitHub
-              </a>
-            </li>
-          )}
-        </ul>
-      </nav>
-    )}
+    <nav class="project-detail__links" aria-label="Enlaces del proyecto">
+      <ul>
+        {project.demo && (
+          <li>
+            <a class="px-btn" href={project.demo} rel="noopener">
+              Ver demo
+            </a>
+          </li>
+        )}
+        {project.repo && (
+          <li>
+            <a
+              class:list={['px-btn', project.demo && 'px-btn--ghost']}
+              href={project.repo}
+              rel="noopener"
+            >
+              Ver código en GitHub
+            </a>
+          </li>
+        )}
+        <li>
+          <a class="px-btn px-btn--ghost" href={`${base}/proyectos/`}>
+            Volver a proyectos
+          </a>
+        </li>
+      </ul>
+    </nav>
   </article>
 </Base>

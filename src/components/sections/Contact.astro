@@ -1,6 +1,6 @@
 ---
 import { site } from '../../config/site';
-import Button from '../ui/Button.astro';
+import Sprite from '../ui/Sprite.astro';
 
 interface Props {
   heading?: string;
@@ -9,22 +9,36 @@ const { heading = 'Contacto' } = Astro.props;
 ---
 
 <section class="contact" aria-labelledby="contact-title">
-  <h1 id="contact-title">{heading}</h1>
-  <div class="body">
+  <h1 id="contact-title" class="px-title">
+    {heading}
+  </h1>
+
+  <div class="save px-box px-box--lift px-box--glow">
+    <div class="save-head">
+      <Sprite name="floppy" scale={3} class="floppy" />
+      <p class="hud-label">Punto de guardado</p>
+    </div>
     <div class="intro">
       <slot />
     </div>
     <ul class="channels">
       {site.email && (
         <li>
-          <Button href={`mailto:${site.email}`}>{site.email}</Button>
+          <a class="px-btn" href={`mailto:${site.email}`}>
+            <Sprite name="mail" scale={2} />
+            <span>
+              {site.email.split('@')[0]}
+              <wbr />@{site.email.split('@')[1]}
+            </span>
+          </a>
         </li>
       )}
       {site.social.map((s) => (
         <li>
-          <Button href={s.url} variant="ghost" external>
-            {s.label}
-          </Button>
+          <a class="px-btn px-btn--ghost" href={s.url} target="_blank" rel="noopener noreferrer">
+            <Sprite name="code" scale={2} />
+            <span>{s.label}</span>
+          </a>
         </li>
       ))}
     </ul>
@@ -37,31 +51,68 @@ const { heading = 'Contacto' } = Astro.props;
     gap: var(--space-6);
   }
   .contact h1 {
-    margin: 0;
+    font-size: var(--step-3);
   }
-  .body {
+  .save {
     display: grid;
     gap: var(--space-5);
-    align-content: start;
+    padding: var(--space-5);
+    max-width: calc(var(--px) * 190);
+  }
+  .save-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .floppy {
+    flex: none;
   }
   .intro {
     font-size: var(--step-1);
-    line-height: 1.45;
-    max-width: 40ch;
+    line-height: 1.33;
+    max-width: 30ch;
   }
   .intro :global(p) {
     max-width: none;
   }
   .channels {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
   }
-  @media (min-width: 64rem) {
-    .contact {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      column-gap: var(--space-8);
-      align-items: start;
+  .channels li {
+    max-width: 100%;
+  }
+  .channels :global(.px-btn) {
+    justify-content: flex-start;
+    text-align: left;
+    overflow-wrap: anywhere;
+    min-height: calc(var(--px) * 14);
+  }
+  .channels :global(.px-btn) span {
+    min-width: 0;
+    /* Rompe en el <wbr> tras la @ antes que en mitad de una palabra */
+    overflow-wrap: break-word;
+  }
+  .channels :global(.px-btn--ghost) {
+    color: var(--ink);
+  }
+  @media (max-width: 30rem) {
+    .channels :global(.px-btn) {
+      flex-wrap: wrap;
+    }
+    .save {
+      padding: var(--space-4);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .floppy {
+      animation: save-blink 1.6s steps(1, end) infinite;
+    }
+    @keyframes save-blink {
+      50% {
+        opacity: 0.55;
+      }
     }
   }
 </style>

@@ -1,68 +1,96 @@
-/* Tokens de diseño. Dirección D2 (por defecto): editorial minimalista, una serif + una mono.
-   Tema: sin atributo = preferencia del sistema; html[data-theme="light|dark"] = elección del usuario. */
+/* Tokens de diseño. Dirección: "claro del bosque" — HUD de videojuego PS2 nocturno en pixel art.
+   Noche es el tema por defecto (sin atributo). Amanecer = html[data-theme="light"]. */
 
+/* Fuente propia: mismo pixel que la intro 3D. Rejilla de 12 px por em: usar tamaños múltiplos de 12 px */
 @font-face {
-  font-family: 'Newsreader';
-  src: url('/fonts/newsreader.woff2') format('woff2');
-  font-weight: 200 800;
+  font-family: 'Wisp Pixel';
+  src: url('/fonts/wisp-pixel.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/fonts/jetbrains-mono.woff2') format('woff2');
-  font-weight: 100 800;
+  font-family: 'Wisp Pixel';
+  src: url('/fonts/wisp-pixel-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* Respaldo mientras carga o si falla */
+@font-face {
+  font-family: 'Pixelify Sans';
+  src: url('/fonts/pixelify-sans.woff2') format('woff2');
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
 }
 
-/* Fallbacks con métricas ajustadas: el swap de fuente no desplaza el layout (CLS) */
+/* Fallbacks con métricas cercanas para minimizar el salto al cargar la fuente (CLS) */
 @font-face {
-  font-family: 'Newsreader Fallback';
-  src: local('Georgia');
-  size-adjust: 96.6%;
-  ascent-override: 76.6%;
-  descent-override: 28%;
-  line-gap-override: 0%;
-}
-@font-face {
-  font-family: 'JetBrains Mono Fallback';
+  font-family: 'Pixelify Sans Fallback';
   src: local('Courier New');
-  size-adjust: 100%;
-  ascent-override: 102%;
-  descent-override: 30%;
+  size-adjust: 97%;
+  ascent-override: 92%;
+  descent-override: 24%;
   line-gap-override: 0%;
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  /* Color (claro). Contraste sobre --bg: ink ~15:1, muted ~6.6:1, accent ~5.6:1 */
-  --bg: #f6f3ec;
-  --surface: #efebe1;
-  --ink: #1a1814;
-  --muted: #5a5449;
-  --line: #d9d3c5;
-  --accent: #a8361a;
-  --accent-ink: #f6f3ec;
-  --focus: #1a1814;
+  /* ── NOCHE (por defecto) ── contraste: ink 17:1, muted 8.8:1, accent 11:1 sobre --bg */
+  --bg: #060b12; /* abismo */
+  --bg-2: #0a1420;
+  --surface: #0e1b29; /* panel */
+  --surface-2: #132638; /* panel elevado */
+  --ink: #e6f0fb; /* blanco lunar */
+  --muted: #98b0c6;
+  --line: #4f86aa; /* borde pixel (≥3:1 con superficies) */
+  --line-hi: #86bde0; /* bisel: luz */
+  --line-lo: #040810; /* bisel: sombra */
+  --shadow: #02050a; /* sombra dura del panel */
+  --accent: #ffb54a; /* energía / luciérnaga */
+  --accent-ink: #1a0f00;
+  --accent-glow: rgb(255 181 74 / 0.32);
+  --moss: #7fcf8a;
+  --moon: #9cc4ff;
+  --danger: #ff7d6e;
+  --focus: #ffd98a;
+  /* Cielo en bandas (sin degradado liso: pixel art) */
+  --sky-1: #060b12;
+  --sky-2: #08111c;
+  --sky-3: #0a1624;
+  --sky-4: #0d1c2d;
+  --sky-5: #122639;
+  --star: #cfe3ff;
+  --pine: #08121c;
+  --pine-2: #0c1b29;
+  --stars-opacity: 1;
 
-  /* Tipografía */
-  --font-serif:
-    'Newsreader', 'Newsreader Fallback', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-mono:
-    'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, 'Cascadia Code', Consolas, monospace;
-  --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
-  --step-0: clamp(1.0625rem, 1.03rem + 0.17vw, 1.1875rem);
-  --step-1: clamp(1.3rem, 1.2rem + 0.5vw, 1.6rem);
-  --step-2: clamp(1.7rem, 1.45rem + 1.2vw, 2.4rem);
-  --step-3: clamp(2.4rem, 1.7rem + 3.4vw, 4.5rem);
-  --step-4: clamp(3rem, 1.8rem + 6vw, 7rem);
-  --step-5: clamp(3.75rem, 1.6rem + 10.5vw, 9.5rem);
-  --leading-tight: 1.05;
-  --leading-body: 1.6;
+  /* Tipografía: una sola familia pixel propia (Regular/Bold). Escala en múltiplos de 12 px (1 px de
+     fuente = 2·k px de pantalla) para que cada pixel del glifo caiga exacto en la rejilla. */
+  --font-display:
+    'Wisp Pixel', 'Pixelify Sans', 'Pixelify Sans Fallback', ui-monospace, 'Cascadia Code',
+    Consolas, monospace;
+  --font-body: var(--font-display);
+  --font-label: var(--font-display);
+  /* Alias de compatibilidad con el sistema anterior */
+  --font-serif: var(--font-display);
+  --font-mono: var(--font-label);
+  --step--1: 24px;
+  --step-0: 24px;
+  --step-1: 36px;
+  --step-2: 48px;
+  --step-3: 72px;
+  --step-4: 96px;
+  --step-5: 120px;
+  --leading-tight: 1.2;
+  --leading-body: 1.5; /* 24px × 1.5 = 36px: múltiplo de la rejilla */
 
-  /* Espaciado (escala de 4px) */
+  /* Unidad pixel: todo el sistema se construye sobre múltiplos de --px */
+  --px: 4px;
+
+  /* Espaciado (escala de la unidad pixel) */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -72,48 +100,62 @@
   --space-7: 3rem;
   --space-8: 4.5rem;
   --space-9: 7rem;
-  --measure: 62ch;
+  --measure: 60ch;
   --page: 72rem;
   --gutter: clamp(1.25rem, 5vw, 3rem);
   --tap: 2.75rem; /* 44px */
 
-  /* Forma */
-  --radius-s: 0.25rem;
-  --radius-m: 0.5rem;
-  --radius-full: 999px;
-  --shadow-1: 0 1px 0 rgb(26 24 20 / 0.06), 0 8px 24px -12px rgb(26 24 20 / 0.18);
+  /* Forma: pixel art no tiene radios; el "redondeo" son esquinas escalonadas */
+  --radius-s: 0;
+  --radius-m: 0;
+  --radius-full: 0;
+  --shadow-1: var(--px) var(--px) 0 0 var(--shadow);
 
-  /* Motion: salida suave, sin rebote */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 150ms;
-  --dur-base: 300ms;
-  --dur-slow: 500ms;
+  /* Motion: pasos discretos (steps), sin suavizado */
+  --ease-out: steps(4, end);
+  --dur-fast: 120ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --bg: #14130f;
-    --surface: #1d1b16;
-    --ink: #ece7dc;
-    --muted: #a8a193;
-    --line: #34312a;
-    --accent: #ee8a64;
-    --accent-ink: #14130f;
-    --focus: #ece7dc;
-    --shadow-1: 0 1px 0 rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+/* Pantallas pequeñas: pixel más fino para que los marcos no se coman el contenido */
+@media (max-width: 40rem) {
+  :root {
+    --px: 3px;
+    --step-2: 36px;
+    --step-3: 48px;
+    --step-4: 72px;
+    --step-5: 72px;
   }
 }
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #14130f;
-  --surface: #1d1b16;
-  --ink: #ece7dc;
-  --muted: #a8a193;
-  --line: #34312a;
-  --accent: #ee8a64;
-  --accent-ink: #14130f;
-  --focus: #ece7dc;
-  --shadow-1: 0 1px 0 rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+/* ── AMANECER (claro) ── contraste: ink 14:1, muted 6.4:1, accent 4.9:1 sobre --bg */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #dfe9f6;
+  --bg-2: #e9f0f9;
+  --surface: #f4f8fc;
+  --surface-2: #ffffff;
+  --ink: #0b1b2d;
+  --muted: #3d5469;
+  --line: #14304a;
+  --line-hi: #ffffff;
+  --line-lo: #8aa4bd;
+  --shadow: #9db3c9;
+  --accent: #a84300;
+  --accent-ink: #fff7e8;
+  --accent-glow: rgb(255 170 90 / 0.4);
+  --moss: #1d6a38;
+  --moon: #1f4f9a;
+  --danger: #a3261a;
+  --focus: #0b1b2d;
+  --sky-1: #b9cfe8;
+  --sky-2: #c9d9ec;
+  --sky-3: #dbe3f0;
+  --sky-4: #ecdfd8;
+  --sky-5: #f6dcc2;
+  --star: #ffffff;
+  --pine: #33506b;
+  --pine-2: #46657f;
+  --stars-opacity: 0;
 }

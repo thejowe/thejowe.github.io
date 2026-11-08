@@ -1,4 +1,6 @@
 ---
+import Sprite from './Sprite.astro';
+
 interface Props {
   href: string;
   variant?: 'primary' | 'ghost';
@@ -8,52 +10,10 @@ const { href, variant = 'primary', external = false } = Astro.props;
 ---
 
 <a
-  class:list={['btn', `btn--${variant}`]}
+  class:list={['px-btn', variant === 'ghost' && 'px-btn--ghost']}
   href={href}
   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
 >
   <slot />
+  {external && <Sprite name="arrow-ext" palette={{ a: 'currentColor' }} />}
 </a>
-
-<style>
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    min-height: var(--tap);
-    padding: 0 var(--space-5);
-    border: 1px solid var(--ink);
-    border-radius: var(--radius-full);
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    font-weight: 500;
-    text-decoration: none;
-    transition:
-      background-color var(--dur-fast) var(--ease-out),
-      color var(--dur-fast) var(--ease-out),
-      transform var(--dur-fast) var(--ease-out);
-  }
-  .btn--primary {
-    background: var(--ink);
-    color: var(--bg);
-  }
-  .btn--primary:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--accent-ink);
-  }
-  .btn--ghost {
-    background: transparent;
-    color: var(--ink);
-  }
-  .btn--ghost:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .btn:active {
-      transform: translateY(1px);
-    }
-  }
-</style>

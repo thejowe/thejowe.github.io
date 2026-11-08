@@ -1,0 +1,239 @@
+/* Cabecera (HUD), menú de juego, skip-link y pie (bosque + suelo).
+   Todo en múltiplos de --px, sin radios ni blur; movimiento solo con steps() y movimiento permitido. */
+
+/* ── Skip link: botón pixel, visible solo al enfocar ── */
+.skip-link {
+  position: absolute;
+  left: calc(var(--px) * 4);
+  top: calc(var(--px) * 4);
+  z-index: 100;
+  transform: translateY(-400%);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* ── Cabecera: barra de HUD ── */
+body > header.hud {
+  --gap: calc(var(--px) * 3);
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'brand toggle'
+    'nav nav';
+  align-items: center;
+  gap: 0 var(--gap);
+  width: calc(100% - 2 * var(--gutter));
+  max-width: calc(var(--page) - 2 * var(--gutter));
+  margin: calc(var(--px) * 5) auto 0;
+  padding: calc(var(--px) * 2) calc(var(--px) * 3);
+  view-transition-name: site-header;
+}
+
+/* Marca: la luz + el nombre */
+body > header .site-name {
+  grid-area: brand;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--px) * 3);
+  min-height: var(--tap);
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--ink);
+}
+body > header .site-name:hover {
+  color: var(--accent);
+}
+body > header .wisp {
+  display: block;
+}
+body > header .theme-toggle {
+  grid-area: toggle;
+  justify-self: end;
+}
+
+/* Menú de juego: 2 columnas en móvil, fila en pantallas anchas */
+body > header nav {
+  grid-area: nav;
+  margin-top: var(--px);
+  padding-top: calc(var(--px) * 2);
+  /* regla pixel entre la marca y el menú (solo móvil) */
+  background: linear-gradient(var(--line), var(--line)) top / 100% var(--px) no-repeat;
+}
+body > header nav ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 var(--px);
+}
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--px);
+  min-height: var(--tap);
+  padding: 0 calc(var(--px) * 2);
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  line-height: 1;
+  text-decoration: none;
+  color: var(--muted);
+}
+.nav-link .nav-cursor {
+  visibility: hidden;
+  color: var(--accent);
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: var(--accent);
+}
+.nav-link:hover .nav-cursor,
+.nav-link:focus-visible .nav-cursor,
+.nav-link[aria-current='page'] .nav-cursor {
+  visibility: visible;
+}
+/* Página actual: tinta plena + barra de energía bajo el texto */
+.nav-link[aria-current='page'] {
+  color: var(--ink);
+  font-weight: 700;
+}
+.nav-link[aria-current='page'] .nav-text {
+  box-shadow: 0 calc(var(--px) * 1) 0 0 var(--accent);
+}
+.nav-link:active .nav-text {
+  transform: translate(var(--px), var(--px));
+  display: inline-block;
+}
+
+@media (min-width: 40rem) {
+  body > header nav ul {
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+  }
+}
+
+/* Barra en una sola fila cuando cabe: marca | menú | tema */
+@media (min-width: 60rem) {
+  body > header.hud {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: 'brand nav toggle';
+  }
+  body > header nav {
+    margin-top: 0;
+    padding-top: 0;
+    background: none;
+    justify-self: center;
+  }
+  body > header nav ul {
+    gap: 0 calc(var(--px) * 2);
+  }
+}
+
+/* Cursor y luz con vida (a saltos, solo con movimiento permitido) */
+@media (prefers-reduced-motion: no-preference) {
+  .nav-link:hover .nav-cursor,
+  .nav-link:focus-visible .nav-cursor {
+    animation: cursor-nudge 0.8s steps(1, end) infinite;
+  }
+  @keyframes cursor-nudge {
+    50% {
+      transform: translateX(var(--px));
+    }
+  }
+  body > header .wisp {
+    animation: wisp-bob 1.6s steps(1, end) infinite;
+  }
+  @keyframes wisp-bob {
+    50% {
+      transform: translateY(calc(var(--px) * -1));
+    }
+  }
+}
+
+/* ── Pie: bosque, luciérnagas, suelo y panel ── */
+body > footer {
+  position: relative;
+  margin-top: var(--space-6);
+}
+body > footer .forest {
+  position: relative;
+  line-height: 0;
+}
+body > footer .firefly {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+}
+body > footer .ground {
+  position: relative;
+  padding: 0 var(--gutter) calc(var(--px) * 8);
+  background: var(--pine);
+}
+/* La hierba sube sobre el borde del suelo */
+body > footer .ground-strip {
+  margin-inline: calc(var(--gutter) * -1);
+  width: calc(100% + 2 * var(--gutter));
+  margin-top: calc(var(--px) * -4);
+  margin-bottom: calc(var(--px) * 4);
+}
+body > footer .foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 calc(var(--px) * 6);
+  max-width: calc(var(--page) - 2 * var(--gutter));
+  margin: 0 auto;
+  padding: calc(var(--px) * 2) calc(var(--px) * 4);
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  color: var(--ink);
+}
+body > footer .foot-copy {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 3);
+  min-height: var(--tap);
+}
+body > footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 calc(var(--px) * 4);
+}
+body > footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  min-height: var(--tap);
+  color: var(--ink);
+}
+body > footer a:hover {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body > footer .firefly {
+    animation: fly-blink 2.8s steps(1, end) infinite;
+    animation-delay: var(--d);
+  }
+  @keyframes fly-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    35% {
+      opacity: 0.25;
+      transform: translateY(var(--px));
+    }
+    65% {
+      opacity: 1;
+      transform: translate(var(--px), calc(var(--px) * -1));
+    }
+  }
+}

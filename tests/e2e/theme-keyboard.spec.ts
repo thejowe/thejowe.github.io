@@ -3,26 +3,30 @@ import { expect, test, type Page } from '@playwright/test';
 const toggle = (page: Page) => page.locator('[data-theme-toggle]').first();
 
 test.describe('tema', () => {
+  // Noche es el valor por defecto aunque el sistema pida claro: ya no se sigue prefers-color-scheme.
   test.use({ colorScheme: 'light' });
 
-  test('el toggle cambia el tema, actualiza aria-pressed y persiste en localStorage', async ({
+  test('Noche por defecto; el toggle alterna a Amanecer, actualiza aria-pressed y persiste', async ({
     page,
   }) => {
     await page.goto('/');
+    expect(await page.locator('html').getAttribute('data-theme')).toBeNull();
     await expect(toggle(page)).toHaveAttribute('aria-pressed', 'false');
-
-    await toggle(page).click();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
-    expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
-
-    await page.reload();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
+    await expect(toggle(page)).toHaveAccessibleName('Tema amanecer');
 
     await toggle(page).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
     expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('light');
+
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
+
+    await toggle(page).click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(toggle(page)).toHaveAttribute('aria-pressed', 'false');
+    expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
   });
 
   test('el tema persiste al navegar a otra página', async ({ page }) => {
@@ -30,14 +34,14 @@ test.describe('tema', () => {
     await toggle(page).click();
     await page.getByRole('link', { name: 'Contacto' }).first().click();
     await expect(page).toHaveURL(/\/contacto/);
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 
   test('con tema guardado no hay flash: ya está aplicado cuando se parsea <body>', async ({
     page,
   }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('theme', 'dark');
+      localStorage.setItem('theme', 'light');
       const w = window as unknown as { __themeAtBody?: string | null };
       const obs = new MutationObserver(() => {
         if (document.body && w.__themeAtBody === undefined) {
@@ -51,7 +55,7 @@ test.describe('tema', () => {
     const atBody = await page.evaluate(
       () => (window as unknown as { __themeAtBody?: string | null }).__themeAtBody,
     );
-    expect(atBody).toBe('dark');
+    expect(atBody).toBe('light');
   });
 
   test('un valor inválido en localStorage se ignora', async ({ page }) => {
@@ -69,9 +73,9 @@ test.describe('teclado', () => {
     await page.goto('/');
     await toggle(page).focus();
     await page.keyboard.press('Enter');
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await page.keyboard.press('Space');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await page.keyboard.press('Space');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   });
 
   test('todos los enlaces y controles son alcanzables con Tab y muestran foco visible', async ({
