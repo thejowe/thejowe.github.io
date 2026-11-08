@@ -13,7 +13,14 @@
 
 <script is:inline>
   // Antes del primer pintado de la intro: solo si el visitante admite movimiento.
-  if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  // Y solo si no la ha completado ya en esta pestaña (al volver a Inicio no se repite).
+  let introSeen = false;
+  try {
+    introSeen = sessionStorage.getItem('intro-done') === '1';
+  } catch {
+    /* sin almacenamiento: se muestra */
+  }
+  if (!introSeen && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     document.documentElement.classList.add('intro-on');
   }
 </script>
@@ -95,8 +102,27 @@
     }
   };
 
+  const markDone = () => {
+    try {
+      sessionStorage.setItem('intro-done', '1');
+    } catch {
+      /* sin almacenamiento: solo vale para esta página */
+    }
+  };
+  const alreadySeen = () => {
+    try {
+      return sessionStorage.getItem('intro-done') === '1';
+    } catch {
+      return false;
+    }
+  };
+
   const boot = async () => {
     if (!(intro && runway && canvas && hero)) return;
+    if (alreadySeen()) {
+      abandon();
+      return;
+    }
     if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
       // Con movimiento reducido no se descarga la escena; si la preferencia cambia, se arranca entonces.
       matchMedia('(prefers-reduced-motion: no-preference)').addEventListener(
@@ -209,6 +235,7 @@
       finish = () => {
         if (finished) return;
         finished = true;
+        markDone();
         cancelled = true;
         const before = hero.getBoundingClientRect().top;
         tl.scrollTrigger?.kill();

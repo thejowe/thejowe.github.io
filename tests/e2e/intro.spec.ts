@@ -37,6 +37,14 @@ test.describe('intro obligatoria', () => {
     await expect(page.locator('[data-intro]')).toBeHidden();
     await expect(page.locator('[data-intro-runway]')).toBeHidden();
     await expect(page.getByRole('link', { name: 'Proyectos', exact: true })).toBeInViewport();
+
+    // Navegar a otra página y volver a Inicio no repite la intro en la misma pestaña.
+    await page.getByRole('link', { name: 'Proyectos', exact: true }).click();
+    await expect(page).toHaveURL(/\/proyectos/);
+    await page.getByRole('link', { name: 'Inicio', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.locator('html')).not.toHaveClass(/intro-on/);
+    await expect(page.locator('[data-intro]')).toBeHidden();
   });
 });
 
