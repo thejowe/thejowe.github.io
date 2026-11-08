@@ -8,7 +8,6 @@
 import { chromeSprites } from './chrome';
 import { projectSprites } from './projects';
 import { sceneSprites } from './scenes';
-import { socialSprites } from './social';
 
 export const baseSprites: Record<string, string[]> = {
   /** Cursor de menú estilo juego */
@@ -31,6 +30,5 @@ export const sprites: Record<string, string[]> = {
   ...baseSprites,
   ...chromeSprites,
   ...sceneSprites,
-  ...socialSprites,
   ...projectSprites,
 };

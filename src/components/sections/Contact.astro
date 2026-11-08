@@ -6,17 +6,6 @@ interface Props {
   heading?: string;
 }
 const { heading = 'Contacto' } = Astro.props;
-
-/** Colores propios del Octocat (cara, ojos, pupilas, ventosas); el negro sale de la tinta del tema. */
-const octocatPalette = { s: '#f4cbb2', w: '#ffffff', r: '#ac5d52', c: '#bfe9e0' };
-
-/** Logo pixel de cada red por su etiqueta; cualquier otra red usa el icono genérico de código. */
-const logoFor = (label: string) =>
-  label.toLowerCase() === 'github'
-    ? 'logo-github'
-    : label.toLowerCase() === 'linkedin'
-      ? 'logo-linkedin'
-      : 'code';
 ---
 
 <section class="contact" aria-labelledby="contact-title">
@@ -49,19 +38,9 @@ const logoFor = (label: string) =>
       <ul class="social" aria-label="Redes">
         {site.social.map((s) => (
           <li>
-            <a
-              class="logo px-box px-box--lift"
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-network={s.label.toLowerCase()}
-            >
-              <Sprite
-                name={logoFor(s.label)}
-                scale={1}
-                palette={logoFor(s.label) === 'logo-github' ? octocatPalette : undefined}
-              />
-              <span class="visually-hidden">{s.label} (se abre en una pestaña nueva)</span>
+            <a class="px-btn" href={s.url} target="_blank" rel="noopener noreferrer">
+              {s.label}
+              <span class="visually-hidden">(se abre en una pestaña nueva)</span>
             </a>
           </li>
         ))}
@@ -141,36 +120,11 @@ const logoFor = (label: string) =>
     }
   }
 
-  /* Redes: fichas con el logo en pixel art */
+  /* Redes: botones de texto */
   .social {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4);
-  }
-  .logo {
-    display: grid;
-    place-items: center;
-    width: calc(var(--px) * 56);
-    height: calc(var(--px) * 56);
-    margin: var(--px);
-    color: var(--ink);
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .logo[data-network='linkedin'] :global(.sprite) {
-    color: var(--moon);
-  }
-  .logo:hover,
-  .logo:focus-visible {
-    --edge: var(--accent);
-    background: var(--surface-2);
-  }
-  .logo:hover :global(.sprite path),
-  .logo:focus-visible :global(.sprite path) {
-    transform: none;
-  }
-  .logo:active {
-    transform: translate(calc(var(--px) * 2), calc(var(--px) * 2));
+    gap: var(--space-3);
   }
   .visually-hidden {
     position: absolute;
