@@ -129,12 +129,16 @@
     }
 
     const mm = gsap.matchMedia();
+    /** La intro es de una sola pasada: al completarla no vuelve aunque se suba. */
+    let finished = false;
     // Con prefers-reduced-motion: reduce no se registra nada: la intro no existe (CSS) y el hero es directo.
     mm.add('(prefers-reduced-motion: no-preference)', () => {
+      if (finished) return;
       root.classList.add('intro-on');
       let scene: Awaited<ReturnType<typeof createIntroScene>> | null = null;
       let cancelled = false;
       const proxy = { p: 0 };
+      let finish: () => void = () => {};
 
       // Fin del tramo: el hero queda justo arriba del viewport (o el máximo scroll posible).
       const heroTop = () => hero.getBoundingClientRect().top + window.scrollY;
@@ -149,6 +153,10 @@
           scrub: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => lockFocus(self.progress < 0.98),
+          // Solo cuando la animación ya alcanzó el final (con el suavizado del scrub al día).
+          onScrubComplete: (self) => {
+            if (self.progress >= 0.999) finish();
+          },
         },
       });
       // El progreso se lo come la escena 3D; el DOM solo gestiona el cue y el fundido final.
@@ -195,6 +203,24 @@
         document.getElementById('contenido')?.focus({ preventScroll: true });
       };
       skipLink?.addEventListener('click', onSkipLink);
+
+      // Fin definitivo: se retira la intro y su recorrido y se compensa el scroll para que el hero
+      // no se mueva; subir ya solo lleva a la cabecera, nunca a la animación.
+      finish = () => {
+        if (finished) return;
+        finished = true;
+        cancelled = true;
+        const before = hero.getBoundingClientRect().top;
+        tl.scrollTrigger?.kill();
+        tl.kill();
+        skipLink?.removeEventListener('click', onSkipLink);
+        scene?.dispose();
+        scene = null;
+        lockFocus(false);
+        abandon();
+        const shift = hero.getBoundingClientRect().top - before;
+        if (shift) window.scrollBy({ top: shift, behavior: 'instant' });
+      };
 
       const onResize = () => scene?.resize();
       window.addEventListener('resize', onResize);

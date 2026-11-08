@@ -31,6 +31,12 @@ test.describe('intro obligatoria', () => {
     await expect(page.locator('[data-intro]')).toBeHidden({ timeout: 15_000 });
     await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
     await expect(page.locator('body > header a').first()).not.toHaveAttribute('tabindex', '-1');
+
+    // Una sola pasada: al subir no vuelve la animación y se llega a la cabecera.
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await expect(page.locator('[data-intro]')).toBeHidden();
+    await expect(page.locator('[data-intro-runway]')).toBeHidden();
+    await expect(page.getByRole('link', { name: 'Proyectos', exact: true })).toBeInViewport();
   });
 });
 
