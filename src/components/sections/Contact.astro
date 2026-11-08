@@ -7,6 +7,9 @@ interface Props {
 }
 const { heading = 'Contacto' } = Astro.props;
 
+/** Colores propios del Octocat (cara, ojos, pupilas, ventosas); el negro sale de la tinta del tema. */
+const octocatPalette = { s: '#f4cbb2', w: '#ffffff', r: '#ac5d52', c: '#bfe9e0' };
+
 /** Logo pixel de cada red por su etiqueta; cualquier otra red usa el icono genérico de código. */
 const logoFor = (label: string) =>
   label.toLowerCase() === 'github'
@@ -53,7 +56,11 @@ const logoFor = (label: string) =>
               rel="noopener noreferrer"
               data-network={s.label.toLowerCase()}
             >
-              <Sprite name={logoFor(s.label)} scale={1} />
+              <Sprite
+                name={logoFor(s.label)}
+                scale={1}
+                palette={logoFor(s.label) === 'logo-github' ? octocatPalette : undefined}
+              />
               <span class="visually-hidden">{s.label} (se abre en una pestaña nueva)</span>
             </a>
           </li>
@@ -143,8 +150,8 @@ const logoFor = (label: string) =>
   .logo {
     display: grid;
     place-items: center;
-    width: calc(var(--px) * 40);
-    height: calc(var(--px) * 40);
+    width: calc(var(--px) * 56);
+    height: calc(var(--px) * 56);
     margin: var(--px);
     color: var(--ink);
     text-decoration: none;
