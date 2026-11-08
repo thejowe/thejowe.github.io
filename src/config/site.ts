@@ -37,7 +37,7 @@ export const site: SiteConfig = {
   title: 'thejowe',
   name: 'thejowe',
   githubUser: 'thejowe',
-  tagline: 'Desarrollo apps móviles y webs con TypeScript, y videojuegos con Godot.',
+  tagline: 'Desarrollo apps móviles y webs con TypeScript.',
   description: 'Portfolio de desarrollo de thejowe: proyectos, código y contacto.',
   email: 'joeldetorres123@gmail.com',
   social: [{ label: 'GitHub', url: 'https://github.com/thejowe' }],
