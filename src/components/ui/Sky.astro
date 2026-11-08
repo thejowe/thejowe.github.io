@@ -6,6 +6,7 @@
  */
 import Sprite from './Sprite.astro';
 import { MOON_PALETTE, moonRows } from '../../lib/pixel/moon';
+import { SUN_PALETTE, sunRows } from '../../lib/pixel/sun';
 import { rng } from '../../lib/intro/ps2';
 
 /** Baldosa de estrellas como SVG en data-URI (cuadrados de 1 sprite-píxel = 3 px). */
@@ -32,8 +33,12 @@ const tileB = starTile(8, 18, 480);
   <div class="stars stars--a" style={`background-image:${tileA}`}></div>
   <div class="stars stars--b" style={`background-image:${tileB}`}></div>
 </div>
-<div class="moon" aria-hidden="true">
+<!-- Noche: luna del bosque. Amanecer (data-theme="light"): sol en el mismo sitio. -->
+<div class="moon celestial" aria-hidden="true">
   <Sprite rows={moonRows} palette={MOON_PALETTE} />
+</div>
+<div class="sun celestial" aria-hidden="true">
+  <Sprite rows={sunRows} palette={SUN_PALETTE} />
 </div>
 
 <style>
@@ -90,8 +95,9 @@ const tileB = starTile(8, 18, 480);
     }
   }
 
-  /* La luna del bosque: parte del documento (se va al hacer scroll), nunca debajo de texto largo */
-  .moon {
+  /* Astro del cielo (luna de noche, sol de amanecer): parte del documento (se va al hacer scroll),
+     nunca debajo de texto largo */
+  .celestial {
     position: absolute;
     top: calc(var(--px) * 6);
     right: max(2vw, calc(var(--px) * 2));
@@ -99,22 +105,29 @@ const tileB = starTile(8, 18, 480);
     pointer-events: none;
     image-rendering: pixelated;
   }
-  /* Tablet: la cabecera sigue en dos filas (~140 px): la luna baja justo debajo */
+  /* Noche: solo la luna. Amanecer: solo el sol, en el mismo sitio */
+  .sun {
+    display: none;
+  }
+  :global(:root[data-theme='light']) .moon {
+    display: none;
+  }
+  :global(:root[data-theme='light']) .sun {
+    display: block;
+  }
+  /* Tablet: la cabecera sigue en dos filas (~140 px): el astro baja justo debajo */
   @media (min-width: 40.01rem) and (max-width: 60rem) {
-    .moon {
+    .celestial {
       top: calc(var(--px) * 36);
     }
   }
-  /* Móvil: la cabecera ocupa ~160 px; la luna baja, más pequeña, al hueco libre junto a la etiqueta */
+  /* Móvil: la cabecera ocupa ~160 px; el astro baja, más pequeño, al hueco libre junto a la etiqueta */
   @media (max-width: 40rem) {
-    .moon {
+    .celestial {
       top: calc(var(--px) * 56);
       right: calc(var(--px) * 2);
       transform: scale(0.5);
       transform-origin: top right;
     }
-  }
-  :global(:root[data-theme='light']) .moon {
-    opacity: 0.55;
   }
 </style>
