@@ -28,6 +28,7 @@ const pushed = stats?.pushedAt
       new Date(stats.pushedAt),
     )
   : null;
+const details = (project.details ?? []).map((d) => d.trim()).filter(Boolean);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const statusText: Record<Project['status'], string> = {
   active: 'Activo',
@@ -61,6 +62,17 @@ const statusText: Record<Project['status'], string> = {
         <p>{project.summary}</p>
       </div>
     </header>
+
+    {details.length > 0 && (
+      <section class="project-detail__about" aria-labelledby="about-app-title">
+        <h2 id="about-app-title" class="hud-label">
+          Qué es
+        </h2>
+        {details.map((d) => (
+          <p>{d}</p>
+        ))}
+      </section>
+    )}
 
     <section class="project-detail__sheet" aria-labelledby="sheet-title">
       <h2 id="sheet-title" class="hud-label">
@@ -115,7 +127,7 @@ const statusText: Record<Project['status'], string> = {
         {project.demo && (
           <li>
             <a class="px-btn" href={project.demo} rel="noopener">
-              Ver demo
+              Ver la web de la app
             </a>
           </li>
         )}

@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../dist');
 const ORIGIN = 'https://thejowe.github.io';
+// Sitios de otros repos servidos bajo el mismo dominio: no son de este build.
+// Solo se omite la URL exacta (sin ancla); cualquier otra ruta bajo ese prefijo sigue fallando.
+const OTHER_SITES = new Set(['/cofounder-web/']);
 
 if (!existsSync(root)) {
   console.error('No existe dist/. Ejecuta `npm run build` antes.');
@@ -67,6 +70,7 @@ for (const page of pages) {
       continue;
     }
     if (url.origin !== ORIGIN) continue; // externos: tarea programada
+    if (OTHER_SITES.has(url.pathname) && !url.hash) continue;
     checked++;
     if (!resolves(url.pathname)) {
       errors.push(`${rel}: enlace roto → ${raw}`);

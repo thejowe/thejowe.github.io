@@ -6,18 +6,21 @@ import type { Project } from '../types/project';
  * D4 sin responder: ningún repo privado aparece aquí. Un privado «oculto» es
  * simplemente un repo ausente de este array.
  *
- * Los `summary` son descriptivos y provisionales (solo hechos verificables del
- * repo), redactados por `contenido`.
  */
 export const projects: Project[] = [
   {
     slug: 'lockin',
     title: 'Cofounder',
     summary:
-      'App móvil con Expo y React Native, backend en Supabase (migraciones, funciones y tests de esquema), interfaz en español, inglés y catalán, y suscripciones con RevenueCat.',
-    role: 'Desarrollo completo',
-    stack: ['TypeScript'],
-    repo: 'https://github.com/thejowe/lockin',
+      'Encuentra con quién fundar: desliza perfiles de personas que quieren empezar algo, haz match cuando el interés es mutuo y conversa para ver si encajáis como cofundadores.',
+    details: [
+      'Cofounder es una app móvil para gente que todavía no tiene proyecto, equipo ni cofundador y quiere encontrar con quién construir algo.',
+      'Creas tu perfil con tus especialidades, lo que buscas, tu punto de partida, tu disponibilidad y tu nivel de compromiso. Después deslizas perfiles; cuando el interés es mutuo hay match y se abre un chat para ver si encajáis.',
+      'Los dos lados de un match son pares: nadie contrata a nadie. Está pensada para mayores de 16 años y está disponible en español, inglés y catalán.',
+    ],
+    role: 'Diseño y desarrollo',
+    stack: ['React Native', 'Expo', 'TypeScript', 'Supabase'],
+    demo: 'https://thejowe.github.io/cofounder-web/',
     visibility: 'public',
     featured: true,
     order: 1,

@@ -15,6 +15,8 @@ export interface Project {
   title: string;
   /** Una o dos frases, sin adjetivos huecos. */
   summary: string;
+  /** Descripción ampliada, un párrafo por elemento (opcional; solo se muestra en el detalle). */
+  details?: string[];
   /** Rol de quien lo construyó (p. ej. «Desarrollo completo»). */
   role: string;
   /** Tecnologías, en orden de relevancia. */
