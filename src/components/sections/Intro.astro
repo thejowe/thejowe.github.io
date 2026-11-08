@@ -23,7 +23,9 @@
 <div class="intro" data-intro>
   <canvas class="canvas" data-canvas aria-hidden="true"></canvas>
   <p class="cue" data-cue aria-hidden="true">
-    <span>Desplaza</span>
+    <span class="cue__text" data-cue-text>
+      Cargando
+    </span>
     <span class="cue__line"></span>
   </p>
 </div>
@@ -39,6 +41,7 @@
   const runway = document.querySelector<HTMLElement>('[data-intro-runway]');
   const canvas = document.querySelector<HTMLCanvasElement>('[data-canvas]');
   const cue = document.querySelector<HTMLElement>('[data-cue]');
+  const cueText = document.querySelector<HTMLElement>('[data-cue-text]');
   const hero = document.getElementById('hero-title')?.closest('section') ?? null;
 
   const abandon = () => root.classList.remove('intro-on', 'intro-ready');
@@ -174,6 +177,7 @@
           scene = s;
           s.setProgress(proxy.p);
           root.classList.add('intro-ready');
+          if (cueText) cueText.textContent = 'Desplaza';
         })
         .catch(() => {
           // Sin WebGL: no se atrapa a nadie.

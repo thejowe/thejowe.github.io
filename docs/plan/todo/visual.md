@@ -22,8 +22,8 @@
 - [x] [Claude] Sin animación que bloquee LCP — h1 sin animar; solo opacity/transform ni mueva layout (CLS 0)
 
 ## Cierre
-- [ ] [comprobador] Capturas en 375/768/1440, claro y oscuro, con y sin reduced-motion
-- [ ] [Claude] `codex review` del diff antes de commitear
+- [x] [comprobador] Capturas en 375/768/1440, claro y oscuro, con y sin reduced-motion (rondas 1-3 + intro 3D)
+- [x] [Claude] `codex review` del diff antes de commitear (cada ronda)
 
 ## Hallazgos del comprobador
 Comprobado 2026-11-07, commit 87db2ee + cambios sin commitear, build local (`astro preview`), Edge. Evidencia: `tests/artifacts/local/` (capturas `<ruta>-<ancho>-<tema>[-rm].png`, `resultados.json`, `extra-salida.txt`, scripts `run-check.mjs` y `run-extra.mjs`).

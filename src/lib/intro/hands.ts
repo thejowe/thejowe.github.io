@@ -769,16 +769,6 @@ export function createHands(ctx: ModuleCtx): IntroModule {
     right.mesh.updateMatrixWorld(true);
   };
 
-  if (import.meta.env?.DEV) {
-    // Solo en desarrollo: permite medir la yema del índice en espacio de cámara desde el laboratorio.
-    (globalThis as unknown as { __handsDebug: unknown }).__handsDebug = {
-      tip: () => {
-        const t = tipCamera();
-        return [t.x, t.y, t.z];
-      },
-    };
-  }
-
   return {
     group,
     update,
