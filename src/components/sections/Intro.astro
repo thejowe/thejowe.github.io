@@ -1,96 +1,14 @@
 ---
 /**
- * Intro scroll-driven: bosque nocturno en primera persona. Una luz lejana se acerca al
- * hacer scroll; al tocarla estalla en un fundido cálido y se revela el hero.
+ * Intro obligatoria scroll-driven: primera persona en un bosque nocturno con estética PS2.
+ * El visitante camina (scroll) hacia una luz, la toca con la mano y estalla en un fundido cálido
+ * que revela la página. La escena 3D vive en src/lib/intro/ (three.js, carga diferida).
  *
- * - Decorativa: toda la escena es aria-hidden; el contenido real vive en Hero.astro.
- * - Solo con movimiento permitido: `html.intro-on` la activa (script en línea, antes del
- *   primer pintado). Sin JS o con prefers-reduced-motion no se renderiza nada.
- * - Siempre nocturna (colores propios, no tokens): el resto de la página respeta el tema.
+ * - Obligatoria: no hay botón de saltar y la página queda bloqueada hasta completarla.
+ *   Excepciones necesarias: prefers-reduced-motion, sin JS o sin WebGL (nunca se atrapa a nadie).
+ * - Decorativa: el canvas es aria-hidden; el contenido real vive en Hero.astro y sigue en el DOM.
+ * - Siempre nocturna: colores propios, no tokens del tema.
  */
-
-// ── Siluetas de pinos generadas en build (determinista: mismo HTML en cada build) ──
-function rng(seed: number) {
-  return () => {
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function pine(cx: number, base: number, h: number, w: number, tiers: number): string {
-  const top = base - h;
-  const right: [number, number][] = [];
-  for (let k = 0; k < tiers; k++) {
-    const yb = top + (h * 0.88 * (k + 1)) / tiers;
-    const wk = w * (0.3 + (0.7 * (k + 1)) / tiers);
-    right.push([cx + wk, yb]);
-    if (k < tiers - 1) right.push([cx + wk * 0.38, yb]);
-  }
-  const tw = Math.max(2, w * 0.1);
-  right.push([cx + tw, top + h * 0.88], [cx + tw, base]);
-  const left = [...right].reverse().map(([x, y]): [number, number] => [2 * cx - x, y]);
-  const pts: [number, number][] = [[cx, top], ...right, ...left];
-  return 'M' + pts.map(([x, y]) => `${Math.round(x)} ${Math.round(y)}`).join('L') + 'Z';
-}
-
-interface LayerCfg {
-  count: number;
-  base: number;
-  hMin: number;
-  hMax: number;
-  /** Semianchura del pasillo central libre de árboles (unidades del viewBox). */
-  corridor: number;
-  wRatio: number;
-}
-
-function forest(cfg: LayerCfg, seed: number): string {
-  const r = rng(seed);
-  let d = '';
-  for (let i = 0; i < cfg.count; i++) {
-    const side = i % 2 ? 1 : -1;
-    const x = 600 + side * (cfg.corridor + r() * (600 - cfg.corridor + 60));
-    const h = cfg.hMin + r() * (cfg.hMax - cfg.hMin);
-    const w = h * cfg.wRatio * (0.85 + r() * 0.3);
-    d += pine(x, cfg.base + (r() - 0.5) * 24, h, w, 4 + Math.floor(r() * 3));
-  }
-  return d;
-}
-
-// De lejos (1) a cerca (5). Más cerca = más grande, más oscuro y pasillo más abierto.
-const layers = [
-  {
-    n: 1,
-    d: forest({ count: 38, base: 480, hMin: 90, hMax: 170, corridor: 70, wRatio: 0.34 }, 11),
-  },
-  {
-    n: 2,
-    d: forest({ count: 22, base: 530, hMin: 170, hMax: 280, corridor: 100, wRatio: 0.34 }, 23),
-  },
-  {
-    n: 3,
-    d: forest({ count: 14, base: 610, hMin: 300, hMax: 460, corridor: 150, wRatio: 0.32 }, 37),
-  },
-  {
-    n: 4,
-    d: forest({ count: 9, base: 730, hMin: 520, hMax: 720, corridor: 210, wRatio: 0.3 }, 41),
-  },
-  {
-    n: 5,
-    d: forest({ count: 6, base: 880, hMin: 820, hMax: 1040, corridor: 290, wRatio: 0.28 }, 53),
-  },
-];
-
-// Luciérnagas: posición inicial (% del lienzo) y desplazamiento hacia fuera (% de ancho/alto).
-const flies = [
-  { l: 44, t: 50, dx: -30, dy: -14 },
-  { l: 57, t: 47, dx: 34, dy: -18 },
-  { l: 51, t: 62, dx: 6, dy: 26 },
-  { l: 40, t: 58, dx: -42, dy: 10 },
-  { l: 61, t: 60, dx: 40, dy: 16 },
-  { l: 48, t: 44, dx: -12, dy: -30 },
-];
 ---
 
 <script is:inline>
@@ -103,137 +21,120 @@ const flies = [
 <div class="runway" data-intro-runway aria-hidden="true"></div>
 
 <div class="intro" data-intro>
-  <div class="scene" data-scene aria-hidden="true">
-    <div class="sky"></div>
-
-    {layers.slice(0, 2).map((l) => (
-      <svg
-        class={`layer layer--${l.n}`}
-        data-layer
-        viewBox="0 0 1200 800"
-        preserveAspectRatio="xMidYMid slice"
-        focusable="false"
-      >
-        <path d={l.d}></path>
-      </svg>
-    ))}
-
-    <div class="wisp" data-wisp>
-      <div class="wisp__aura"></div>
-      <div class="wisp__halo" data-halo></div>
-      <div class="wisp__core"></div>
-    </div>
-
-    <div class="fog fog--a" data-fog></div>
-    <svg
-      class="layer layer--3"
-      data-layer
-      viewBox="0 0 1200 800"
-      preserveAspectRatio="xMidYMid slice"
-      focusable="false"
-    >
-      <path d={layers[2]!.d}></path>
-    </svg>
-    <div class="fog fog--b" data-fog></div>
-    {layers.slice(3).map((l) => (
-      <svg
-        class={`layer layer--${l.n}`}
-        data-layer
-        viewBox="0 0 1200 800"
-        preserveAspectRatio="xMidYMid slice"
-        focusable="false"
-      >
-        <path d={l.d}></path>
-      </svg>
-    ))}
-
-    {flies.map((f) => (
-      <span
-        class="fly"
-        data-fly
-        data-dx={f.dx}
-        data-dy={f.dy}
-        style={`left:${f.l}%;top:${f.t}%`}
-      ></span>
-    ))}
-
-    <div class="vignette" data-vignette></div>
-    <p class="cue" data-cue>
-      <span>Desplaza</span>
-      <span class="cue__line"></span>
-    </p>
-  </div>
-
-  <div class="burst" data-burst aria-hidden="true"></div>
-
-  <button type="button" class="skip" data-skip>
-    Saltar intro
-  </button>
+  <canvas class="canvas" data-canvas aria-hidden="true"></canvas>
+  <p class="cue" data-cue aria-hidden="true">
+    <span>Desplaza</span>
+    <span class="cue__line"></span>
+  </p>
 </div>
 
 <script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
   const root = document.documentElement;
   const intro = document.querySelector<HTMLElement>('[data-intro]');
   const runway = document.querySelector<HTMLElement>('[data-intro-runway]');
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-canvas]');
+  const cue = document.querySelector<HTMLElement>('[data-cue]');
   const hero = document.getElementById('hero-title')?.closest('section') ?? null;
-  const main = document.getElementById('contenido');
 
-  // gsap + ScrollTrigger tardan ~170 ms en arrancar: se cargan tras `load` y en reposo para no
-  // sumar TBT. Hasta entonces la escena inicial ya está pintada solo con CSS.
+  const abandon = () => root.classList.remove('intro-on', 'intro-ready');
+
+  /** Mientras la intro cubre la página, nada de lo tapado entra en el orden de tabulación. */
+  const FOCUSABLE = 'a[href], button, input, select, textarea, summary, [tabindex]';
+  const covered = () => {
+    const roots = [
+      'body > header',
+      'body > footer',
+      'main > :not([data-intro]):not([data-intro-runway])',
+    ];
+    const found = new Set<HTMLElement>();
+    for (const r of roots) {
+      document.querySelectorAll<HTMLElement>(r).forEach((el) => {
+        if (el.matches(FOCUSABLE)) found.add(el);
+        el.querySelectorAll<HTMLElement>(FOCUSABLE).forEach((f) => found.add(f));
+      });
+    }
+    document.querySelectorAll<HTMLElement>('body > .skip-link').forEach((el) => found.add(el));
+    return found;
+  };
+  const saved = new Map<HTMLElement, string | null>();
+  const lockFocus = (on: boolean) => {
+    if (on) {
+      for (const el of covered()) {
+        if (saved.has(el)) continue;
+        saved.set(el, el.getAttribute('tabindex'));
+        el.setAttribute('tabindex', '-1');
+      }
+      // Un control que ya tenía el foco no puede conservarlo debajo de la escena.
+      if (document.activeElement instanceof HTMLElement && saved.has(document.activeElement)) {
+        document.activeElement.blur();
+      }
+    } else {
+      for (const [el, prev] of saved) {
+        if (prev === null) el.removeAttribute('tabindex');
+        else el.setAttribute('tabindex', prev);
+      }
+      saved.clear();
+    }
+  };
+
+  const hasWebGL = () => {
+    try {
+      const gl = document.createElement('canvas').getContext('webgl2');
+      gl?.getExtension('WEBGL_lose_context')?.loseContext();
+      return !!gl;
+    } catch {
+      return false;
+    }
+  };
+
   const boot = async () => {
-    if (!(intro && runway && hero)) return;
-    // La red de seguridad de CSS ya retiró la intro (carga lenta): estado terminal.
-    if (root.classList.contains('intro-on') && getComputedStyle(runway).display === 'none') {
-      root.classList.remove('intro-on');
+    if (!(intro && runway && canvas && hero)) return;
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      // Con movimiento reducido no se descarga la escena; si la preferencia cambia, se arranca entonces.
+      matchMedia('(prefers-reduced-motion: no-preference)').addEventListener(
+        'change',
+        (e) => {
+          if (e.matches) void boot();
+        },
+        { once: true },
+      );
       return;
     }
-    const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-      import('gsap'),
-      import('gsap/ScrollTrigger'),
-    ]);
-    gsap.registerPlugin(ScrollTrigger);
-    const mm = gsap.matchMedia();
+    // La red de seguridad de CSS ya retiró la intro (carga muy lenta): estado terminal.
+    if (root.classList.contains('intro-on') && getComputedStyle(runway).display === 'none') {
+      abandon();
+      return;
+    }
 
-    // Sin preferencia de reducción: animación completa. Con "reduce" no se registra nada:
-    // la intro no se muestra y el hero queda directo (ver CSS: .intro solo con html.intro-on).
+    // Sin WebGL no se carga ni three: la página sigue directa, sin errores de consola.
+    if (!hasWebGL()) {
+      abandon();
+      return;
+    }
+
+    let createIntroScene: typeof import('../../lib/intro/scene').createIntroScene;
+    try {
+      ({ createIntroScene } = await import('../../lib/intro/scene'));
+    } catch {
+      abandon();
+      return;
+    }
+
+    const mm = gsap.matchMedia();
+    // Con prefers-reduced-motion: reduce no se registra nada: la intro no existe (CSS) y el hero es directo.
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       root.classList.add('intro-on');
+      let scene: Awaited<ReturnType<typeof createIntroScene>> | null = null;
+      let cancelled = false;
+      const proxy = { p: 0 };
 
-      const q = gsap.utils.selector(intro);
-      const layers = q<SVGElement>('[data-layer]');
-      const flies = q<HTMLElement>('[data-fly]');
-      const scene = q('[data-scene]')[0]!;
-      const wisp = q('[data-wisp]')[0]!;
-      const halo = q('[data-halo]')[0]!;
-      const burst = q('[data-burst]')[0]!;
-      const vignette = q('[data-vignette]')[0]!;
-      const cue = q('[data-cue]')[0]!;
-      const skip = q<HTMLButtonElement>('[data-skip]')[0]!;
-      const fogs = q('[data-fog]');
-
-      // Fin del tramo: el hero queda justo arriba del viewport al terminar.
-      const shell = document.querySelectorAll(
-        'main > :not([data-intro]):not([data-intro-runway]), body > footer',
-      );
-      const setInert = (on: boolean) => shell.forEach((el) => el.toggleAttribute('inert', on));
-      setInert(true);
-
+      // Fin del tramo: el hero queda justo arriba del viewport (o el máximo scroll posible).
       const heroTop = () => hero.getBoundingClientRect().top + window.scrollY;
-
-      // Cámara hacia delante: las capas cercanas escalan más rápido (paralaje), todas desde
-      // el punto de fuga. Valores finales de cada capa de lejos (1) a cerca (5).
-      const scaleEnd = [1.35, 1.9, 3, 5, 9];
-      const driftX = [-3, -6, -12, -20, -32];
-      // Ventana de desvanecido al pasar por la cámara (capas 3-5).
-      const fade: Record<number, [number, number]> = {
-        2: [0.65, 0.86],
-        3: [0.5, 0.72],
-        4: [0.34, 0.56],
-      };
-
-      gsap.set(layers, { transformOrigin: '50% 56%' });
-      gsap.set([wisp], { transformOrigin: '0 0' });
-      gsap.set(burst, { autoAlpha: 0, scale: 0.05 });
 
       const tl = gsap.timeline({
         paused: true,
@@ -244,81 +145,70 @@ const flies = [
           end: () => Math.min(heroTop(), ScrollTrigger.maxScroll(window)),
           scrub: 1,
           invalidateOnRefresh: true,
-          // Mientras la intro cubre la página, cabecera/pie no reciben foco invisible.
-          onUpdate: (self) => setInert(self.progress < 0.98),
+          onUpdate: (self) => lockFocus(self.progress < 0.98),
         },
       });
+      // El progreso se lo come la escena 3D; el DOM solo gestiona el cue y el fundido final.
+      tl.to(proxy, { p: 1, duration: 1, onUpdate: () => scene?.setProgress(proxy.p) }, 0);
+      if (cue) tl.to(cue, { autoAlpha: 0, duration: 0.05 }, 0.02);
+      tl.to(intro, { autoAlpha: 0, duration: 0.05 }, 0.95);
 
-      // Posición en la timeline = progreso de scroll (duración total 1).
-      // Fase 1 (0-0.15): bosque lejano, luz diminuta y tenue. Solo el cue se retira.
-      tl.to(cue, { autoAlpha: 0, duration: 0.1 }, 0.03);
+      lockFocus(true);
 
-      // Fase 2 (0.15-0.7): avance. Paralaje de 5 capas, la luz crece y brilla.
-      layers.forEach((layer, i) => {
-        tl.to(layer, { scale: scaleEnd[i], x: driftX[i], duration: 0.75 }, 0.15);
-        const f = fade[i];
-        if (f) tl.to(layer, { autoAlpha: 0, duration: f[1] - f[0] }, f[0]);
-      });
-      tl.fromTo(
-        wisp,
-        { scale: 1, y: 0 },
-        { scale: 8, y: () => -window.innerHeight * 0.03, duration: 0.55 },
-        0.15,
-      );
-      tl.fromTo(halo, { opacity: 0.45 }, { opacity: 1, duration: 0.55 }, 0.15);
-      tl.to(fogs, { x: (i) => (i ? 40 : -40), duration: 0.55 }, 0.15);
-      tl.to(
-        flies,
-        {
-          x: (_i, el: HTMLElement) => (Number(el.dataset.dx) * window.innerWidth) / 100,
-          y: (_i, el: HTMLElement) => (Number(el.dataset.dy) * window.innerHeight) / 100,
-          scale: 2.5,
-          duration: 0.6,
-        },
-        0.15,
-      );
-      tl.fromTo(flies, { opacity: 0 }, { opacity: 0.9, duration: 0.12 }, 0.2);
-      tl.to(flies, { opacity: 0, duration: 0.14 }, 0.62);
+      const giveUp = () => {
+        cancelled = true;
+        lockFocus(false);
+        abandon();
+        tl.scrollTrigger?.kill();
+        tl.kill();
+        scene?.dispose();
+        scene = null;
+      };
+      // Mismo plazo que la red de seguridad de CSS: si la escena no llegó, se libera la página.
+      const giveUpTimer = window.setTimeout(giveUp, 15000);
 
-      // Fase 3 (0.7-0.9): la luz llena el centro; niebla y viñeta se aclaran.
-      tl.to(wisp, { scale: 12, duration: 0.2 }, 0.7);
-      tl.to(fogs, { opacity: 0, duration: 0.2 }, 0.7);
-      tl.to(vignette, { opacity: 0.3, duration: 0.2 }, 0.7);
+      createIntroScene(canvas)
+        .then((s) => {
+          clearTimeout(giveUpTimer);
+          if (cancelled) return s.dispose();
+          scene = s;
+          s.setProgress(proxy.p);
+          root.classList.add('intro-ready');
+        })
+        .catch(() => {
+          // Sin WebGL: no se atrapa a nadie.
+          clearTimeout(giveUpTimer);
+          giveUp();
+        });
 
-      // Fase 4 (0.9-0.95): "toque". Un único fundido cálido que cubre la pantalla.
-      tl.to(skip, { autoAlpha: 0, duration: 0.05 }, 0.88);
-      tl.to(burst, { autoAlpha: 1, scale: 6.5, ease: 'power2.out', duration: 0.05 }, 0.9);
-      // Cubierto el lienzo, la escena ya no hace falta (reversible al volver atrás).
-      tl.set(scene, { autoAlpha: 0 }, 0.95);
-
-      // Fase 5 (0.95-1): el flash se disipa y deja ver el hero real.
-      tl.to(burst, { autoAlpha: 0, duration: 0.05 }, 0.95);
-
-      const onSkip = () => {
+      // «Saltar al contenido»: el destino real es el hero, no el principio de <main> (bajo la intro).
+      const skipLink = document.querySelector<HTMLElement>('body > .skip-link');
+      const onSkipLink = (e: Event) => {
         const st = tl.scrollTrigger;
         if (!st) return;
+        e.preventDefault();
         window.scrollTo({ top: st.end, behavior: 'instant' });
-        // Sin el recorrido suavizado del scrub: nada de flash comprimido en unos fotogramas.
-        tl.progress(1);
-        main?.focus({ preventScroll: true });
+        document.getElementById('contenido')?.focus({ preventScroll: true });
       };
-      skip.addEventListener('click', onSkip);
-      const skipLink = document.querySelector<HTMLElement>('body > .skip-link');
-      skipLink?.addEventListener('click', onSkip);
+      skipLink?.addEventListener('click', onSkipLink);
 
-      // La posición del hero depende de las fuentes: recalcular al cargarlas.
+      const onResize = () => scene?.resize();
+      window.addEventListener('resize', onResize);
       void document.fonts.ready.then(() => ScrollTrigger.refresh());
-      root.classList.add('intro-ready');
 
       return () => {
-        skip.removeEventListener('click', onSkip);
-        skipLink?.removeEventListener('click', onSkip);
-        setInert(false);
-        root.classList.remove('intro-on', 'intro-ready');
+        cancelled = true;
+        clearTimeout(giveUpTimer);
+        skipLink?.removeEventListener('click', onSkipLink);
+        window.removeEventListener('resize', onResize);
+        scene?.dispose();
+        lockFocus(false);
+        abandon();
       };
     });
   };
 
+  // three tarda en cargar y arrancar: se difiere a después de `load` y a un momento de reposo.
   const schedule = () =>
     'requestIdleCallback' in window
       ? requestIdleCallback(() => void boot())
@@ -335,7 +225,8 @@ const flies = [
   }
   :global(html.intro-on) .runway {
     display: block;
-    height: 300svh;
+    /* Un recorrido largo: 70 m de bosque y el gesto final. */
+    height: 420svh;
     /* Compensa el padding superior de main: el recorrido empieza en el borde de la página */
     margin-top: calc(-1 * var(--space-7));
   }
@@ -344,29 +235,20 @@ const flies = [
     position: fixed;
     inset: 0;
     z-index: 50;
-    pointer-events: none;
+    /* Traga clics y toques sobre lo tapado; la rueda y el táctil siguen desplazando la página */
+    pointer-events: auto;
     overflow: hidden;
+    /* Color de niebla de la escena: sin destello blanco mientras carga el 3D */
+    background: #0a1620;
     color: #ece4d0;
     font-family: var(--font-mono);
   }
-  /* La cabecera sigue accesible sobre la escena (misma navegación, colores nocturnos). */
-  :global(html.intro-on) :global(body > header) {
-    position: relative;
-    z-index: 60;
-    --ink: #ece4d0;
-    --muted: #b9b2a2;
-    --line: rgb(236 228 208 / 0.25);
-    --accent: #f2a37c;
-    --focus: #ffe2ae;
-    --surface: rgb(236 228 208 / 0.1);
-    --bg: #04060b;
-  }
-  /* Red de seguridad: si el script no llega a arrancar, la intro se retira sola. */
+  /* Red de seguridad: si la escena no llega a arrancar, la intro se retira sola. */
   :global(html.intro-on:not(.intro-ready)) .intro {
-    animation: intro-give-up 0s linear 8s forwards;
+    animation: intro-give-up 0s linear 15s forwards;
   }
   :global(html.intro-on:not(.intro-ready)) .runway {
-    animation: intro-give-up-runway 0s linear 8s forwards;
+    animation: intro-give-up-runway 0s linear 15s forwards;
   }
   @keyframes intro-give-up {
     to {
@@ -379,135 +261,19 @@ const flies = [
     }
   }
 
-  .scene,
-  .sky,
-  .layer,
-  .fog,
-  .vignette,
-  .burst {
+  .canvas {
     position: absolute;
-  }
-  .scene,
-  .sky,
-  .layer,
-  .vignette {
     inset: 0;
-  }
-
-  .sky {
-    background:
-      radial-gradient(ellipse 60% 40% at 50% 56%, rgb(255 196 120 / 0.1), transparent 70%),
-      radial-gradient(1.5px 1.5px at 12% 14%, #fff, transparent),
-      radial-gradient(1px 1px at 27% 8%, #cfd9ff, transparent),
-      radial-gradient(1.5px 1.5px at 38% 22%, #fff, transparent),
-      radial-gradient(1px 1px at 64% 11%, #cfd9ff, transparent),
-      radial-gradient(1.5px 1.5px at 78% 19%, #fff, transparent),
-      radial-gradient(1px 1px at 90% 7%, #cfd9ff, transparent),
-      radial-gradient(1px 1px at 8% 31%, #cfd9ff, transparent),
-      radial-gradient(1px 1px at 85% 33%, #fff, transparent),
-      linear-gradient(#03050a 0%, #09121d 45%, #13202b 58%, #070c12 62%, #020306 100%);
-  }
-
-  .layer {
     width: 100%;
     height: 100%;
-    will-change: transform, opacity;
-  }
-  .layer--1 path {
-    fill: #1a2a37;
-  }
-  .layer--2 path {
-    fill: #132029;
-  }
-  .layer--3 path {
-    fill: #0c161e;
-  }
-  .layer--4 path {
-    fill: #070d13;
-  }
-  .layer--5 path {
-    fill: #03060a;
-  }
-
-  /* Luz: el origen del grupo es su centro, los hijos se centran con márgenes. */
-  .wisp {
-    position: absolute;
-    left: 50%;
-    top: 56%;
-    width: 0;
-    height: 0;
-    will-change: transform;
-  }
-  .wisp__aura,
-  .wisp__halo,
-  .wisp__core {
-    position: absolute;
-    border-radius: 50%;
-  }
-  .wisp__aura {
-    --s: 30vmin;
-    width: var(--s);
-    height: var(--s);
-    margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
-    background: radial-gradient(circle, rgb(255 210 140 / 0.22), transparent 68%);
-  }
-  .wisp__halo {
-    --s: 6vmin;
-    width: var(--s);
-    height: var(--s);
-    margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
-    background: radial-gradient(
-      circle,
-      rgb(255 226 160 / 0.75),
-      rgb(255 190 110 / 0.25) 45%,
-      transparent 70%
-    );
-    will-change: opacity;
-  }
-  .wisp__core {
-    --s: 0.7vmin;
-    width: max(var(--s), 4px);
-    height: max(var(--s), 4px);
-    margin: calc(max(var(--s), 4px) / -2) 0 0 calc(max(var(--s), 4px) / -2);
-    background: #fff8e6;
-    box-shadow: 0 0 6px 2px rgb(255 232 170 / 0.8);
-  }
-
-  .fog {
-    left: -10%;
-    right: -10%;
-    height: 34%;
-    will-change: transform, opacity;
-  }
-  .fog--a {
-    top: 44%;
-    background: linear-gradient(transparent, rgb(120 150 170 / 0.16) 50%, transparent);
-  }
-  .fog--b {
-    top: 60%;
-    background: linear-gradient(transparent, rgb(100 130 150 / 0.2) 55%, transparent);
-  }
-
-  .fly {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    margin: -2.5px 0 0 -2.5px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff3c8, rgb(255 210 130 / 0.4) 55%, transparent 70%);
-    opacity: 0;
-    will-change: transform, opacity;
-  }
-
-  .vignette {
-    background: radial-gradient(ellipse 75% 70% at 50% 56%, transparent 40%, rgb(0 0 0 / 0.7) 100%);
-    will-change: opacity;
+    /* Render interno de baja resolución, ampliado sin suavizado: el look PS2 */
+    image-rendering: pixelated;
   }
 
   .cue {
     position: absolute;
     left: 50%;
-    bottom: var(--space-8);
+    bottom: var(--space-6);
     display: grid;
     justify-items: center;
     gap: var(--space-2);
@@ -515,7 +281,8 @@ const flies = [
     font-size: var(--step--1);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgb(236 228 208 / 0.75);
+    color: rgb(236 228 208 / 0.8);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.8);
     max-width: none;
     will-change: opacity;
   }
@@ -523,54 +290,5 @@ const flies = [
     width: 1px;
     height: 2.5rem;
     background: linear-gradient(rgb(236 228 208 / 0.7), transparent);
-  }
-
-  /* Explosión de luz: círculo que escala hasta cubrir la pantalla desde la posición de la luz. */
-  .burst {
-    left: 50%;
-    top: 56%;
-    width: 40vmax;
-    height: 40vmax;
-    margin: -20vmax 0 0 -20vmax;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      #fffdf4 0%,
-      #fff4d6 40%,
-      #ffe7b0 60%,
-      rgb(255 231 176 / 0) 72%
-    );
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(0.05);
-    will-change: transform, opacity;
-  }
-
-  .skip {
-    position: absolute;
-    bottom: var(--space-5);
-    right: var(--gutter);
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    padding: var(--space-2) var(--space-4);
-    border: 1px solid rgb(236 228 208 / 0.45);
-    border-radius: var(--radius-s);
-    background: rgb(4 6 11 / 0.6);
-    color: #ece4d0;
-    font: inherit;
-    font-size: var(--step--1);
-    letter-spacing: 0.04em;
-    cursor: pointer;
-  }
-  .skip:hover {
-    border-color: #ece4d0;
-    background: rgb(236 228 208 / 0.12);
-  }
-  /* El foco global usa la tinta del tema: aquí el fondo es siempre oscuro. */
-  .skip:focus-visible {
-    outline: 2px solid #ffe2ae;
-    outline-offset: 3px;
   }
 </style>

@@ -9,7 +9,13 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
-  use: { baseURL: `http://localhost:${PORT}`, trace: 'retain-on-failure' },
+  use: {
+    baseURL: `http://localhost:${PORT}`,
+    trace: 'retain-on-failure',
+    // La intro 3D es obligatoria con movimiento; los specs generales prueban la web sin ella.
+    // tests/e2e/intro.spec.ts activa el movimiento explícitamente.
+    reducedMotion: 'reduce',
+  },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
     command: `npm run build && npm run preview -- --port ${PORT}`,
