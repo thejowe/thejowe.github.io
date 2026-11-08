@@ -13,9 +13,12 @@
 
 <script is:inline>
   // Antes del primer pintado de la intro: solo si el visitante admite movimiento.
-  // Y solo si no la ha completado ya en esta pestaña (al volver a Inicio no se repite).
+  // Y solo si no la ha completado ya en esta pestaña (al volver a Inicio no se repite; al recargar, sí).
   let introSeen = false;
   try {
+    // Recargar la página reinicia la intro; navegar entre páginas del sitio no la repite.
+    const nav = performance.getEntriesByType('navigation')[0];
+    if (nav && nav.type === 'reload') sessionStorage.removeItem('intro-done');
     introSeen = sessionStorage.getItem('intro-done') === '1';
   } catch {
     /* sin almacenamiento: se muestra */

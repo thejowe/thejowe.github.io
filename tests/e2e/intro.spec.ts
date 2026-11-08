@@ -45,6 +45,12 @@ test.describe('intro obligatoria', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.locator('html')).not.toHaveClass(/intro-on/);
     await expect(page.locator('[data-intro]')).toBeHidden();
+
+    // Recargar la página sí reinicia la intro.
+    await page.reload();
+    await expect(page.locator('html')).toHaveClass(/intro-on/);
+    await expect(page.locator('html')).toHaveClass(/intro-ready/, { timeout: 30_000 });
+    await expect(page.locator('[data-intro]')).toBeVisible();
   });
 });
 
