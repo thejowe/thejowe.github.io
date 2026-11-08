@@ -207,8 +207,10 @@ export function createWisp(ctx: ModuleCtx): IntroModule {
       const beat = 1 + 0.06 * (Math.floor(Math.sin(p * 40) * 1.5) / 1.5) * (1 - antic);
 
       // Tamaño angular creciente ("hinchado"): minúsculo a lo lejos, grande de cerca.
-      const k = (0.014 + 0.07 * Math.pow(approach, 1.5)) * (1 - 0.3 * antic) * beat;
-      const baseOp = 0.55 + 0.45 * Math.pow(near, 0.8);
+      // Tamaño FÍSICO (metros) que crece con la cercanía, más la perspectiva natural (1/d): a lo lejos
+      // es apenas un punto (mínimo ~1.5 px para que no desaparezca) y se hincha al acercarte.
+      const body = (0.1 + 0.2 * Math.pow(approach, 1.4)) * (1 - 0.3 * antic) * beat;
+      const baseOp = 0.4 + 0.6 * Math.pow(near, 0.8);
       const fadeOut = 1 - smooth(0.55, 1, u);
 
       // Iluminación del entorno (horneada por vértice en el parche PS2).
@@ -217,12 +219,12 @@ export function createWisp(ctx: ModuleCtx): IntroModule {
       ps2Uniforms.uWisp.value.copy(origin);
 
       // Núcleo: crece hasta llenar la vista con el estallido.
-      const coreSize = d * k * 1.6 + 6 * eu;
+      const coreSize = Math.max(body * 1.6, d * 0.009) + 6 * eu;
       core.scale.setScalar(coreSize);
       coreMat.opacity = Math.min(1, baseOp + 0.4 * antic) * (u > 0 ? 1 - smooth(0.7, 1, u) : 1);
-      mid.scale.setScalar(d * k * 4.5 + 9 * eu);
+      mid.scale.setScalar(Math.max(body * 4.2, d * 0.02) + 9 * eu);
       midMat.opacity = baseOp * 0.8 * fadeOut + 0.2 * antic;
-      halo.scale.setScalar(d * k * 11 * (1 - 0.35 * antic) + 6 * eu);
+      halo.scale.setScalar(Math.max(body * 8 * (1 - 0.35 * antic), d * 0.04) + 6 * eu);
       haloMat.opacity = baseOp * 0.7 * fadeOut + 0.15 * antic;
       const alive = u < 1;
       core.visible = mid.visible = halo.visible = alive;
@@ -238,7 +240,7 @@ export function createWisp(ctx: ModuleCtx): IntroModule {
       }
 
       // Motas orbitales: giran con p; radio y velocidad crecen al acercarse; se dispersan al estallar.
-      const orbitR = d * (0.025 + 0.06 * approach) * (1 - 0.5 * antic);
+      const orbitR = Math.max(0.05 + 0.35 * Math.pow(approach, 1.3), d * 0.012) * (1 - 0.5 * antic);
       for (let i = 0; i < MOTES; i++) {
         const m = moteBase[i]!;
         const a = m.a + m.speed * p * Math.PI * 2 * (0.3 + approach);
@@ -259,7 +261,7 @@ export function createWisp(ctx: ModuleCtx): IntroModule {
         moteCol[i * 3 + 1] = b * 0.85;
         moteCol[i * 3 + 2] = b * 0.55;
       }
-      moteMat.size = Math.max(0.0001, d * (0.004 + 0.006 * approach));
+      moteMat.size = Math.max(d * 0.003, 0.01 + 0.018 * approach);
       moteGeo.attributes.position!.needsUpdate = true;
       moteGeo.attributes.color!.needsUpdate = true;
       motes.visible = alive && p > T.walkStart * 0.5;
